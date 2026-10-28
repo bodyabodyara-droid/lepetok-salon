@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f8f2ed">
+<meta name="description" content="Салон красоты — маникюр, наращивание, окрашивание и оформление бровей. Запишитесь онлайн.">
+<title>Лепесток — салон красоты</title>
+<style>
+:root{--bg:#fbf7f3;--paper:#fffdfb;--ink:#302823;--muted:#796e66;--rose:#b86f75;--rose-dark:#92545b;--line:#eadfd7;--sage:#dce5d7;--serif:Georgia,'Times New Roman',serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;line-height:1.6}a{color:inherit;text-decoration:none}button,input,select,textarea{font:inherit}.wrap{width:min(1120px,calc(100% - 40px));margin:auto}.topbar{padding:18px 0;border-bottom:1px solid var(--line)}.nav{display:flex;align-items:center;justify-content:space-between;gap:24px}.brand{font:26px var(--serif);letter-spacing:.04em}.brand span{color:var(--rose)}.navlinks{display:flex;gap:24px;color:var(--muted);font-size:14px}.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:999px;padding:13px 22px;background:var(--rose);color:white;font-weight:700;cursor:pointer;transition:.2s}.btn:hover{background:var(--rose-dark);transform:translateY(-1px)}.btn.secondary{background:transparent;color:var(--rose-dark);border:1px solid #d9b6b5}.hero{padding:76px 0 68px;display:grid;grid-template-columns:1.08fr .92fr;gap:56px;align-items:center}.eyebrow{text-transform:uppercase;letter-spacing:.19em;font-size:11px;font-weight:700;color:var(--rose-dark)}h1,h2,h3{font-family:var(--serif);font-weight:400;line-height:1.12}h1{font-size:clamp(42px,5.5vw,70px);margin:18px 0}h1 em{font-weight:400;color:var(--rose)}.hero p{max-width:490px;color:var(--muted);font-size:17px;margin:0 0 28px}.hero-note{font-size:12px;color:var(--muted);margin-top:15px}.hero-art{min-height:390px;border-radius:48% 48% 24px 24px;background:linear-gradient(145deg,#e8d4cb,#d7b8b0 54%,#cba8a1);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}.hero-art:before{content:"";position:absolute;width:70%;height:85%;border:1px solid rgba(255,255,255,.7);border-radius:50%;transform:rotate(19deg)}.flower{font-size:clamp(130px,19vw,230px);filter:drop-shadow(0 18px 18px #865c5530);z-index:1}.art-caption{position:absolute;bottom:22px;right:22px;background:#fffdfbe8;padding:12px 17px;border-radius:14px;font:italic 17px var(--serif)}section{padding:70px 0}.section-head{text-align:center;max-width:620px;margin:0 auto 36px}.section-head h2{font-size:clamp(32px,4vw,46px);margin:12px 0}.section-head p{color:var(--muted);margin:0}.services{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.service{padding:24px 20px;background:var(--paper);border:1px solid var(--line);border-radius:18px;min-height:205px;display:flex;flex-direction:column}.service .icon{font-size:27px}.service h3{font-size:24px;margin:15px 0 7px}.service p{font-size:13px;color:var(--muted);margin:0 0 20px}.price{margin-top:auto;font-weight:700;color:var(--rose-dark)}.about{background:#f0e6df}.about-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:55px;align-items:center}.about-mark{height:290px;border-radius:18px;background:var(--sage);display:grid;place-items:center;font:italic 34px var(--serif);color:#59654f;text-align:center;padding:25px}.about h2{font-size:clamp(32px,4vw,46px);margin:10px 0 18px}.about p{color:var(--muted)}.booking-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:50px;align-items:start}.booking-copy h2{font-size:44px;margin:12px 0}.booking-copy p{color:var(--muted)}.booking-card{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:30px;box-shadow:0 15px 50px #5b42320a}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field{display:flex;flex-direction:column;gap:7px}.field.full{grid-column:1/-1}.field label{font-size:13px;font-weight:700}.field input,.field select,.field textarea{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink);outline:none}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--rose)}.form-foot{font-size:12px;color:var(--muted);margin:14px 0}.notice{display:none;margin-top:15px;padding:14px;border-radius:12px;background:#e8f0e4;color:#3f5d3d;font-size:14px}.contact{background:#302823;color:#fffaf6;text-align:center}.contact h2{font-size:44px;margin:12px 0}.contact p{color:#d9cdc5}.contact .btn{margin-top:14px}.footer{padding:22px 0;color:var(--muted);font-size:12px}.footer-row{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+@media(max-width:800px){.navlinks{display:none}.hero{grid-template-columns:1fr;gap:30px;padding-top:50px}.hero-art{min-height:300px}.services{grid-template-columns:repeat(2,1fr)}.about-grid,.booking-grid{grid-template-columns:1fr;gap:28px}.about-mark{height:200px}section{padding:54px 0}}
+@media(max-width:480px){.wrap{width:min(100% - 28px,1120px)}.brand{font-size:23px}.nav .btn{padding:10px 14px;font-size:13px}.services{grid-template-columns:1fr 1fr;gap:10px}.service{padding:17px 14px;min-height:195px}.service h3{font-size:20px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.booking-card{padding:20px}.hero-art{min-height:260px}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="wrap nav"><a class="brand" href="#home">лепесток<span>.</span></a><nav class="navlinks"><a href="#services">Услуги</a><a href="#about">О салоне</a><a href="#booking">Запись</a><a href="#contacts">Контакты</a></nav><a class="btn" href="#booking">Записаться</a></div></header>
+<main>
+<section class="wrap hero" id="home"><div><div class="eyebrow">Салон красоты · забота о себе</div><h1>Твоя красота<br>в <em>деталях.</em></h1><p>Маленькие ритуалы, после которых чувствуешь себя по-новому. Маникюр, волосы и брови — с вниманием к тебе.</p><a class="btn" href="#booking">Выбрать услугу&nbsp; ↗</a><div class="hero-note">Уютная атмосфера · Бережный подход · Внимание к деталям</div></div><div class="hero-art" aria-label="Нежная цветочная иллюстрация"><div class="flower">✿</div><div class="art-caption">Время для себя</div></div></section>
+<section id="services"><div class="wrap"><div class="section-head"><div class="eyebrow">Наши направления</div><h2>Красота начинается с заботы</h2><p>Выбери то, что хочется именно сегодня.</p></div><div class="services">
+<article class="service"><div class="icon">✧</div><h3>Наращивание</h3><p>Аккуратная форма и стойкий результат.</p><div class="price">от 3 500 ₽</div></article>
+<article class="service"><div class="icon">◌</div><h3>Окрашивание</h3><p>Обновление оттенка и образа.</p><div class="price">Стоимость уточняется</div></article>
+<article class="service"><div class="icon">♡</div><h3>Маникюр</h3><p>Уход за руками и безупречный вид.</p><div class="price">от 2 000 ₽</div></article>
+<article class="service"><div class="icon">✿</div><h3>Брови</h3><p>Естественная форма, подчёркивающая черты лица.</p><div class="price">Стоимость уточняется</div></article>
+</div></div></section>
+<section class="about" id="about"><div class="wrap about-grid"><div class="about-mark">Твоё время.<br>Твоя красота.</div><div><div class="eyebrow">Добро пожаловать</div><h2>Место, где можно выдохнуть</h2><p>Мы верим, что красота — не про спешку, а про внимание к себе. Подберём подходящую услугу, обсудим пожелания и позаботимся о комфортном результате.</p><p>Наша цель — чтобы ты ушла не только с красивым результатом, но и с хорошим настроением.</p><a class="btn" href="#booking">Записаться на визит</a></div></div></section>
+<section id="booking"><div class="wrap booking-grid"><div class="booking-copy"><div class="eyebrow">Онлайн-запись</div><h2>Давай выберем время для тебя</h2><p>Оставь контакты и пожелания. Мы свяжемся с тобой, чтобы подтвердить дату и время.</p><p>✧ Запись считается подтверждённой после согласования с мастером.</p></div><div class="booking-card"><form id="bookingForm"><div class="form-grid">
+<div class="field"><label for="name">Твоё имя *</label><input id="name" name="name" autocomplete="name" required placeholder="Как к тебе обращаться"></div>
+<div class="field"><label for="phone">Телефон *</label><input id="phone" name="phone" type="tel" autocomplete="tel" required placeholder="+7 ___ ___-__-__"></div>
+<div class="field"><label for="service">Услуга *</label><select id="service" name="service" required><option value="">Выбери услугу</option><option>Наращивание</option><option>Окрашивание</option><option>Маникюр</option><option>Брови</option></select></div>
+<div class="field"><label for="date">Желаемая дата *</label><input id="date" name="date" type="date" required></div>
+<div class="field"><label for="time">Удобное время</label><select id="time" name="time"><option value="">Пока не важно</option><option>Утро (09:00–12:00)</option><option>День (12:00–16:00)</option><option>Вечер (16:00–20:00)</option></select></div>
+<div class="field"><label for="contact">Как связаться?</label><select id="contact" name="contact"><option>Телефон</option><option>Telegram</option></select></div>
+<div class="field full"><label for="comment">Комментарий (необязательно)</label><textarea id="comment" name="comment" rows="3" placeholder="Пожелания к услуге"></textarea></div>
+<div class="field full"><button class="btn" type="submit">Отправить заявку&nbsp; ↗</button><div class="form-foot">Нажимая кнопку, ты соглашаешься на обработку указанных данных для связи по поводу записи.</div><div class="notice" id="notice" role="status"></div></div>
+</div></form></div></div></section>
+<section class="contact" id="contacts"><div class="wrap"><div class="eyebrow">Будем рады знакомству</div><h2>Есть вопросы?</h2><p>Свяжись с нами — поможем выбрать услугу и ответим на вопросы.</p><a class="btn" href="#booking">Оставить заявку</a></div></section>
+</main>
+<footer class="footer"><div class="wrap footer-row"><span>© <span id="year"></span> Лепесток · Салон красоты</span><span>Услуги и цены уточняются при подтверждении записи</span></div></footer>
+<script>
+const dateInput=document.getElementById('date');
+const localToday=new Date();dateInput.min=new Date(localToday.getTime()-localToday.getTimezoneOffset()*60000).toISOString().slice(0,10);
+document.getElementById('year').textContent=new Date().getFullYear();
+document.getElementById('bookingForm').addEventListener('submit',async function(e){
+ e.preventDefault();
+ const form=this;
+ const button=form.querySelector('button[type="submit"]');
+ const msg=document.getElementById('notice');
+ button.disabled=true;
+ button.textContent='Отправляем…';
+ msg.style.display='none';
+ try{
+  const response=await fetch('/api/bookings',{
+   method:'POST',
+   headers:{'Content-Type':'application/json'},
+   body:JSON.stringify(Object.fromEntries(new FormData(form).entries()))
+  });
+  const result=await response.json();
+  if(!response.ok||!result.ok) throw new Error(result.error||'Не удалось отправить заявку.');
+  msg.style.display='block';
+  msg.textContent='Спасибо! Заявка №'+result.booking_id+' сохранена. '+result.message;
+  form.reset();
+ }catch(err){
+  msg.style.display='block';
+  msg.style.background='#f6e8e5';
+  msg.style.color='#8a3838';
+  msg.textContent='Не удалось отправить заявку. Проверьте подключение и попробуйте ещё раз. ('+err.message+')';
+ }finally{
+  button.disabled=false;
+  button.textContent='Отправить заявку ↗';
+ }
+});
+</script>
+</body></html>
