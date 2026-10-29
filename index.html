@@ -126,26 +126,26 @@ body{font-family:'Manrope',Arial,sans-serif}
 h1,h2,h3,.section-head h2,.about h2,.booking-copy h2,.contact h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;letter-spacing:-.018em}
 .section-head h2,.about h2,.booking-copy h2,.contact h2{font-size:clamp(38px,5vw,58px)}
 .eyebrow{letter-spacing:.22em;font-size:10px;text-transform:uppercase;display:inline-flex;align-items:center;gap:10px}
-.eyebrow:before,.eyebrow:after{content:'?';font-size:9px;color:#8ba36b;opacity:.9}
-.fortuna-hero:after{content:'?';position:absolute;left:8%;top:32%;font-size:clamp(24px,4vw,48px);color:#8da477;opacity:.65;animation:floatOrnament 7s ease-in-out infinite;pointer-events:none}
-.fortuna-hero:before{content:'?';position:absolute;right:9%;bottom:24%;font-size:clamp(18px,3vw,34px);color:#a6b98c;opacity:.7;animation:floatOrnament 8s ease-in-out infinite reverse;pointer-events:none}
+.eyebrow:before,.eyebrow:after{content:none!important;
+.fortuna-hero:after{content:none!important;position:absolute;left:8%;top:32%;font-size:clamp(24px,4vw,48px);color:#8da477;opacity:.65;animation:floatOrnament 7s ease-in-out infinite;pointer-events:none}
+.fortuna-hero:before{content:none!important;position:absolute;right:9%;bottom:24%;font-size:clamp(18px,3vw,34px);color:#a6b98c;opacity:.7;animation:floatOrnament 8s ease-in-out infinite reverse;pointer-events:none}
 @keyframes floatOrnament{0%,100%{transform:translateY(0) rotate(0);opacity:.45}50%{transform:translateY(-12px) rotate(12deg);opacity:.9}}
 .orbit-scene{filter:drop-shadow(0 12px 25px #6f87501c)}
 .catalog-card{position:relative;overflow:hidden;border-radius:22px;box-shadow:0 12px 30px #536b3510;transition:transform .3s,box-shadow .3s,border-color .3s}
-.catalog-card:after{content:'?';position:absolute;top:17px;right:20px;color:#9eb387;font-size:22px;opacity:.6;pointer-events:none}
+.catalog-card:after{content:none!important;position:absolute;top:17px;right:20px;color:#9eb387;font-size:22px;opacity:.6;pointer-events:none}
 .catalog-card:hover{transform:translateY(-5px);box-shadow:0 18px 38px #536b3520;border-color:#b7c8a3}
 .catalog-card h3{font-size:30px;line-height:1.05;padding-right:18px}
 .catalog-card .icon{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:#e6eddc;border:1px solid #d2dfc1;font-size:23px;margin-bottom:8px}
 .price-list li{transition:padding .2s,color .2s}
 .price-list li:hover{padding-left:5px;color:#536b35}
 .about{position:relative;overflow:hidden}
-.about:after{content:'?';position:absolute;right:-15px;bottom:-75px;font:240px 'Cormorant Garamond',serif;color:#8da477;opacity:.12;transform:rotate(-18deg);pointer-events:none}
+.about:after{content:none!important;position:absolute;right:-15px;bottom:-75px;font:240px 'Cormorant Garamond',serif;color:#8da477;opacity:.12;transform:rotate(-18deg);pointer-events:none}
 .about-mark{position:relative;isolation:isolate;box-shadow:inset 0 0 0 8px #f6f7ef,inset 0 0 0 9px #c6d5b4,0 15px 35px #536b3512;font:italic 42px 'Cormorant Garamond',Georgia,serif}
-.about-mark:before{content:'?';display:block;font-size:28px;color:#71894c;margin-bottom:12px}
+.about-mark:before{content:none!important;display:block;font-size:28px;color:#71894c;margin-bottom:12px}
 .booking-card{border-radius:28px}
 .btn{letter-spacing:.015em}
 .contact{position:relative;overflow:hidden}
-.contact:before{content:'?  ?  ?';display:block;color:#71894c;letter-spacing:1.2em;font-size:15px;margin-bottom:10px;opacity:.8}
+.contact:before{content:none!important;display:block;color:#71894c;letter-spacing:1.2em;font-size:15px;margin-bottom:10px;opacity:.8}
 @media(max-width:600px){.hero-word{font-size:clamp(54px,15vw,90px)}.fortuna-hero:after{left:4%;top:38%}.fortuna-hero:before{right:5%;bottom:28%}.catalog-card h3{font-size:25px}.about-mark{font-size:35px}}
 
 </style>
@@ -184,7 +184,7 @@ h1,h2,h3,.section-head h2,.about h2,.booking-copy h2,.contact h2{font-family:'Co
 <section id="booking"><div class="wrap booking-grid"><div class="booking-copy"><div class="eyebrow">Онлайн-запись</div><h2>Давай выберем время для тебя</h2><p>Оставь контакты и пожелания. Мы свяжемся с тобой, чтобы подтвердить дату и время.</p><p>✧ Запись считается подтверждённой после согласования с мастером.</p></div><div class="booking-card"><form id="bookingForm"><div class="form-grid">
 <div class="field"><label for="name">Твоё имя *</label><input id="name" name="name" autocomplete="name" required placeholder="Как к тебе обращаться"></div>
 <div class="field"><label for="phone">Телефон *</label><input id="phone" name="phone" type="tel" autocomplete="tel" required placeholder="+7 ___ ___-__-__"></div>
-<div class="field"><label for="service">Услуга *</label><select id="service" name="service" required><option value="">Выбери услугу</option><option>Стрижки и причёски</option><option>Брови</option><option>Ресницы</option><option>Маникюр</option><option>Педикюр</option><option>Массаж</option><option>Шугаринг</option></select></div>
+<div class="field"><label for="service">Услуга *</label><select id="service" name="service" required><option value="">Выбери услугу</option><option>Стрижки и причёски</option><option>Брови и ресницы</option><option>Маникюр</option><option>Педикюр</option><option>Массаж</option><option>Шугаринг</option></select></div>
 <div class="field"><label for="date">Желаемая дата *</label><input id="date" name="date" type="date" required></div>
 <div class="field"><label for="time">Удобное время</label><select id="time" name="time"><option value="">Пока не важно</option><option>Утро (09:00–12:00)</option><option>День (12:00–16:00)</option><option>Вечер (16:00–20:00)</option></select></div>
 <div class="field"><label for="contact">Как связаться?</label><select id="contact" name="contact"><option>Телефон</option><option>Telegram</option></select></div>
@@ -229,3 +229,6 @@ document.getElementById('bookingForm').addEventListener('submit',async function(
 });
 </script>
 </body></html>
+
+/* Hide broken decorative glyphs; do not render question marks as ornaments. */
+.eyebrow:before,.eyebrow:after,.fortuna-hero:before,.fortuna-hero:after,.catalog-card:after,.about:after,.about-mark:before,.contact:before{content:none!important;display:none!important}
