@@ -154,6 +154,18 @@ h1,h2,h3,.section-head h2,.about h2,.booking-copy h2,.contact h2{font-family:'Co
 .masters-links nav{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
 .masters-links nav span{color:inherit;font-weight:600}
 @media(max-width:600px){.masters-links-inner{align-items:flex-start;flex-direction:column;gap:16px}.masters-links nav{gap:14px 20px}}
+
+.masters-open{appearance:none;border:0;padding:0;background:transparent;color:inherit;font:inherit;font-weight:600;cursor:pointer;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:5px;transition:color .2s,text-decoration-color .2s}
+.masters-open:hover,.masters-open:focus-visible{color:#7a965e;text-decoration-color:currentColor}
+.specialists-modal[hidden]{display:none}
+.specialists-modal{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(27,35,24,.58);backdrop-filter:blur(4px)}
+.specialists-dialog{position:relative;width:min(100%,620px);max-height:min(85vh,720px);overflow:auto;padding:34px;border:1px solid #dfe7d5;border-radius:22px;background:#fbfcf8;box-shadow:0 24px 80px rgba(0,0,0,.22)}
+.specialists-dialog h2{margin:0 38px 10px 0;color:#45533b;font-size:clamp(24px,4vw,32px)}
+.specialists-dialog p{margin:0 0 22px;line-height:1.6;color:#596151}
+.specialists-close{position:absolute;top:14px;right:16px;width:38px;height:38px;border:0;border-radius:50%;background:#edf1e7;color:#45533b;font-size:25px;cursor:pointer}
+.specialists-placeholder{padding:18px;border-radius:14px;background:#f0f4e9;color:#45533b;line-height:1.6}
+@media(max-width:600px){.specialists-dialog{padding:28px 20px;border-radius:18px}}
+
 </style>
 </head>
 <body>
@@ -199,7 +211,16 @@ h1,h2,h3,.section-head h2,.about h2,.booking-copy h2,.contact h2{font-family:'Co
 </div></form></div></div></section>
 <section class="contact" id="contacts"><div class="wrap"><div class="eyebrow">Будем рады знакомству</div><h2>Есть вопросы?</h2><p>Свяжись с нами — поможем выбрать услугу и ответим на вопросы.</p><a class="btn" href="#booking">Оставить заявку</a></div></section>
 </main>
-<section class="masters-links" aria-labelledby="masters-title"><div class="wrap masters-links-inner"><h2 id="masters-title">???????</h2><nav aria-label="?????????? ? ????????"><span>???????????</span><span>?????? ??????</span><span>?????</span></nav></div></section>
+<section class="masters-links" aria-labelledby="masters-title"><div class="wrap masters-links-inner"><h2 id="masters-title">???????</h2><nav aria-label="?????????? ? ????????"><button class="masters-open" type="button" data-open-specialists>???????????</button><span>?????? ??????</span><span>?????</span></nav></div></section>
+
+<div class="specialists-modal" data-specialists-modal hidden>
+ <section class="specialists-dialog" role="dialog" aria-modal="true" aria-labelledby="specialists-dialog-title" tabindex="-1">
+  <button class="specialists-close" type="button" data-close-specialists aria-label="??????? ????">?</button>
+  <h2 id="specialists-dialog-title">???????????</h2>
+  <p>???? ??????? ? ??????????? ??????.</p>
+  <div class="specialists-placeholder">???????? ???????????? ????? ???????? ?????. ??????? ??????????, ?????, ????????????? ? ??????, ????? ?????????? ??????????.</div>
+ </section>
+</div>
 <footer class="footer"><div class="wrap footer-row"><span>© <span id="year"></span> Будь счастлив · Салон красоты</span><span>Услуги и цены уточняются при подтверждении записи</span></div></footer>
 <script>
 const dateInput=document.getElementById('date');
@@ -234,6 +255,16 @@ document.getElementById('bookingForm').addEventListener('submit',async function(
   button.textContent='Отправить заявку ↗';
  }
 });
+
+const specialistsModal=document.querySelector('[data-specialists-modal]');
+const specialistsOpen=document.querySelector('[data-open-specialists]');
+const specialistsClose=document.querySelector('[data-close-specialists]');
+function closeSpecialists(){specialistsModal.hidden=true;document.body.style.overflow='';specialistsOpen?.focus();}
+specialistsOpen?.addEventListener('click',()=>{specialistsModal.hidden=false;document.body.style.overflow='hidden';specialistsModal.querySelector('[role="dialog"]').focus();});
+specialistsClose?.addEventListener('click',closeSpecialists);
+specialistsModal?.addEventListener('click',event=>{if(event.target===specialistsModal)closeSpecialists();});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&specialistsModal&&!specialistsModal.hidden)closeSpecialists();});
+
 </script>
 </body></html>
 
