@@ -25,6 +25,13 @@ body{background:radial-gradient(ellipse at 50% 0%,#1c0828 0,#07040b 55%);overflo
 @keyframes tickerMove{to{transform:translateX(-50%)}}
 .fortuna-hero{position:relative;isolation:isolate;min-height:min(790px,calc(100svh - 80px));padding:0 20px 34px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;overflow:hidden;background:radial-gradient(ellipse at 50% 57%,#29103d 0,#10071b 34%,#07040b 72%)}
 .hero-word{z-index:2;position:relative;margin-top:4px;font:clamp(58px,13.8vw,190px)/.95 Georgia,'Times New Roman',serif;letter-spacing:-.055em;color:#09070b;-webkit-text-stroke:1.5px #f8edff;text-shadow:0 0 2px #fff,0 8px 35px #9d45d755;text-align:center}
+
+/* A fine moving light glides across the FORTUNA lettering, matching the reference video. */
+.hero-word{isolation:isolate;}
+.hero-word::after{content:"FORTUNA";position:absolute;inset:0;pointer-events:none;color:transparent;-webkit-text-stroke:0;background:linear-gradient(108deg,transparent 0%,transparent 38%,rgba(255,255,255,.08) 43%,#fff 48%,#e4b8ff 51%,rgba(255,255,255,.25) 55%,transparent 62%,transparent 100%);background-size:240% 100%;background-position:140% 0;background-clip:text;-webkit-background-clip:text;opacity:0;animation:letterGlimmer 5.8s ease-in-out infinite;filter:drop-shadow(0 0 5px #f5d8ff);}
+@keyframes letterGlimmer{0%,58%,100%{background-position:140% 0;opacity:0}63%{opacity:.18}69%{opacity:.95}76%{opacity:.22}86%{background-position:-40% 0;opacity:0}}
+@media(prefers-reduced-motion:reduce){.hero-word::after{animation:none;opacity:0}}
+
 .hero-rail{position:absolute;top:22%;left:-5%;width:110%;height:25px;border-top:2px solid #6f2d8b;border-bottom:2px solid #6f2d8b;background:#491b64a6;display:flex;justify-content:space-between;align-items:center;padding:0 25%;color:#fff;font-size:20px;z-index:0}
 .orbit-scene{position:relative;z-index:1;width:min(64vw,470px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;margin:auto 0;isolation:isolate;background:radial-gradient(circle,#210a34 0 42%,#08050c 43% 55%,transparent 56%);filter:drop-shadow(0 0 28px #7622a344)}
 .orbit{position:absolute;border-radius:50%;pointer-events:none}
