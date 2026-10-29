@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ru">
 <head>
 <meta charset="utf-8">
@@ -95,6 +95,17 @@ body{background:radial-gradient(ellipse at 12% 8%,#e5ecd8 0,transparent 34%),rad
 .price-list li span{color:#52614a}.price-list li b{white-space:nowrap;color:#536b35;font-size:13px}
 @media(max-width:800px){.catalog{grid-template-columns:1fr}.catalog-card{padding:22px 20px}.hero-word{font-size:clamp(44px,11vw,90px)}}
 @media(max-width:480px){.price-list li{font-size:13px;gap:10px}.price-list li b{font-size:12px;white-space:normal;text-align:right;max-width:45%}.ticker{height:28px}}
+/* Restore the original centered hero alignment */
+.fortuna-hero{position:relative;isolation:isolate;min-height:min(790px,calc(100svh - 80px));padding:0 20px 34px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;overflow:hidden}
+.hero-word{z-index:2;position:relative;margin-top:4px;width:100%;text-align:center;line-height:.95}
+.hero-rail{position:absolute;top:22%;left:-5%;width:110%;height:25px;display:flex;justify-content:space-between;align-items:center;padding:0 25%;z-index:0}
+.orbit-scene{position:relative;z-index:1;width:min(64vw,470px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;margin:auto 0}
+.orbit-caption{position:absolute;bottom:-2%;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:clamp(8px,1.3vw,12px)}
+.hero-bottom{z-index:2;display:flex;align-items:center;gap:24px;justify-content:center;flex-wrap:wrap;text-align:center}
+.hero-bottom p{margin:0;letter-spacing:.12em;text-transform:uppercase;font-size:12px}
+.hero-glow{position:absolute;z-index:-1;inset:0}
+@media(max-width:800px){.fortuna-hero{min-height:690px}.hero-word{margin-top:20px}.orbit-scene{width:min(82vw,420px)}.hero-rail{top:24%}.hero-bottom{padding-bottom:12px}}
+@media(max-width:480px){.fortuna-hero{min-height:650px;padding-left:14px;padding-right:14px}.hero-word{font-size:18vw}.orbit-scene{width:88vw}.orbit-caption{letter-spacing:.12em}.hero-rail{top:25%;height:18px}}
 </style>
 </head>
 <body>
