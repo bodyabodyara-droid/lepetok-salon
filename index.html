@@ -18,7 +18,7 @@ body{background:radial-gradient(ellipse at 50% 0%,#1c0828 0,#07040b 55%);overflo
 .brand{font-family:Georgia,'Times New Roman',serif;font-size:clamp(30px,5vw,56px);letter-spacing:.08em;color:#f7edff;text-shadow:0 0 20px #c45bff45}
 .brand span{color:#a83bdb}.navlinks{color:#d7c3e5}.eyebrow{color:#ce83ff}
 .ticker{height:31px;overflow:hidden;white-space:nowrap;background:linear-gradient(90deg,#1b0828,#51216b,#1b0828);border-bottom:1px solid #a45bc2;color:#f5e9ff;font:clamp(16px,2.1vw,25px) Georgia,serif;letter-spacing:.1em}
-.ticker-track{display:flex;width:max-content;will-change:transform;animation:tickerMove 18s linear infinite}
+.ticker-track{display:flex;width:max-content;will-change:transform;animation:tickerMove 18s linear infinite}.ticker-group{min-width:100vw;justify-content:space-around}.ticker-group span{padding-right:1.2em}
 .ticker-group{display:flex;flex:none;align-items:center;white-space:nowrap}
 .ticker-group span{display:inline-block;padding-right:.7em}
 .ticker:hover .ticker-track{animation-play-state:paused}
@@ -32,7 +32,7 @@ body{background:radial-gradient(ellipse at 50% 0%,#1c0828 0,#07040b 55%);overflo
 .orbit-two{inset:10%;border:1px dashed #d2a0ec;box-shadow:0 0 18px #8c2ac455,inset 0 0 25px #7d20aa24;animation:spin 34s linear infinite reverse}
 .orbit-three{inset:19%;border:2px solid transparent;border-top-color:#d95cff;border-right-color:#6e2696;animation:spin 12s linear infinite}
 .sigil{width:42%;height:42%;display:grid;place-items:center;border-radius:50%;background:radial-gradient(circle,#17121b,#030204 72%);color:#000;font-size:clamp(70px,13vw,145px);line-height:1;text-shadow:0 0 1px #000;filter:brightness(0);box-shadow:0 0 0 1px #f4eaff,0 0 40px #a83bdf55;animation:sigilPulse 5s ease-in-out infinite}
-.orbit-caption{position:absolute;bottom:3%;left:50%;transform:translateX(-50%);white-space:nowrap;color:#d8b9ed;font-size:clamp(8px,1.3vw,12px);letter-spacing:.25em}
+.orbit-caption{position:absolute;bottom:-2%;left:50%;transform:translateX(-50%);white-space:nowrap;color:#d8b9ed;font-size:clamp(8px,1.3vw,12px);letter-spacing:.25em}
 .hero-bottom{z-index:2;display:flex;align-items:center;gap:24px;justify-content:center;flex-wrap:wrap;text-align:center;color:#d9c5e6}
 .hero-bottom p{margin:0;letter-spacing:.12em;text-transform:uppercase;font-size:12px}
 .hero-glow{position:absolute;z-index:-1;inset:0;background:radial-gradient(ellipse at 18% 65%,#4b79d533,transparent 35%),radial-gradient(ellipse at 82% 65%,#7b42c544,transparent 38%);animation:glowDrift 10s ease-in-out infinite alternate}
