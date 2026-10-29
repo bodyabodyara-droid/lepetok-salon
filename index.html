@@ -18,7 +18,10 @@ body{background:radial-gradient(ellipse at 50% 0%,#1c0828 0,#07040b 55%);overflo
 .brand{font-family:Georgia,'Times New Roman',serif;font-size:clamp(30px,5vw,56px);letter-spacing:.08em;color:#f7edff;text-shadow:0 0 20px #c45bff45}
 .brand span{color:#a83bdb}.navlinks{color:#d7c3e5}.eyebrow{color:#ce83ff}
 .ticker{height:31px;overflow:hidden;white-space:nowrap;background:linear-gradient(90deg,#1b0828,#51216b,#1b0828);border-bottom:1px solid #a45bc2;color:#f5e9ff;font:clamp(16px,2.1vw,25px) Georgia,serif;letter-spacing:.1em}
-.ticker-track{width:max-content;animation:tickerMove 24s linear infinite}
+.ticker-track{display:flex;width:max-content;will-change:transform;animation:tickerMove 18s linear infinite}
+.ticker-group{display:flex;flex:none;align-items:center;white-space:nowrap}
+.ticker-group span{display:inline-block;padding-right:.7em}
+.ticker:hover .ticker-track{animation-play-state:paused}
 @keyframes tickerMove{to{transform:translateX(-50%)}}
 .fortuna-hero{position:relative;isolation:isolate;min-height:min(790px,calc(100svh - 80px));padding:0 20px 34px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;overflow:hidden;background:radial-gradient(ellipse at 50% 57%,#29103d 0,#10071b 34%,#07040b 72%)}
 .hero-word{z-index:2;position:relative;margin-top:4px;font:clamp(58px,13.8vw,190px)/.95 Georgia,'Times New Roman',serif;letter-spacing:-.055em;color:#09070b;-webkit-text-stroke:1.5px #f8edff;text-shadow:0 0 2px #fff,0 8px 35px #9d45d755;text-align:center}
@@ -45,7 +48,7 @@ body{background:radial-gradient(ellipse at 50% 0%,#1c0828 0,#07040b 55%);overflo
 </style>
 </head>
 <body>
-<div class="ticker" aria-hidden="true"><div class="ticker-track">FORTUNA&nbsp; ✦ &nbsp;FORTUNA&nbsp; ✦ &nbsp;FORTUNA&nbsp; ✦ &nbsp;FORTUNA&nbsp; ✦ &nbsp;FORTUNA&nbsp; ✦ &nbsp;FORTUNA&nbsp; ✦ &nbsp;</div></div>
+<div class="ticker" aria-hidden="true"><div class="ticker-track"><div class="ticker-group"><span>FORTUNA ✦</span><span>FORTUNA ✦</span><span>FORTUNA ✦</span><span>FORTUNA ✦</span><span>FORTUNA ✦</span><span>FORTUNA ✦</span></div><div class="ticker-group" aria-hidden="true"><span>FORTUNA ✦</span><span>FORTUNA ✦</span><span>FORTUNA ✦</span><span>FORTUNA ✦</span><span>FORTUNA ✦</span><span>FORTUNA ✦</span></div></div></div>
 <header class="topbar"><div class="wrap nav"><a class="brand" href="#home">FORTUNA</a><nav class="navlinks"><a href="#services">Услуги</a><a href="#about">О салоне</a><a href="#booking">Запись</a><a href="#contacts">Контакты</a></nav><a class="btn" href="#booking">Записаться</a></div></header>
 <main>
 <section class="fortuna-hero" id="home">
