@@ -148,15 +148,6 @@ h1,h2,h3,.section-head h2,.about h2,.booking-copy h2,.contact h2{font-family:'Co
 .contact:before{content:none!important;display:block;color:#71894c;letter-spacing:1.2em;font-size:15px;margin-bottom:10px;opacity:.8}
 @media(max-width:600px){.hero-word{font-size:clamp(54px,15vw,90px)}.fortuna-hero:after{left:4%;top:38%}.fortuna-hero:before{right:5%;bottom:28%}.catalog-card h3{font-size:25px}.about-mark{font-size:35px}}
 
-.masters-links{padding:34px 0 28px;background:#f2f5ec;border-top:1px solid #dfe7d5}
-.masters-links-inner{display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap}
-.masters-links h2{margin:0;font-size:15px;letter-spacing:.16em;font-weight:800;color:#45533b}
-.masters-links nav{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
-.masters-links nav span{color:inherit;font-weight:600}
-@media(max-width:600px){.masters-links-inner{align-items:flex-start;flex-direction:column;gap:16px}.masters-links nav{gap:14px 20px}}
-
-.masters-open{appearance:none;border:0;padding:0;background:transparent;color:inherit;font:inherit;font-weight:600;cursor:pointer;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:5px;transition:color .2s,text-decoration-color .2s}
-.masters-open:hover,.masters-open:focus-visible{color:#7a965e;text-decoration-color:currentColor}
 .specialists-modal[hidden]{display:none}
 .specialists-modal{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(27,35,24,.58);backdrop-filter:blur(4px)}
 .specialists-dialog{position:relative;width:min(100%,620px);max-height:min(85vh,720px);overflow:auto;padding:34px;border:1px solid #dfe7d5;border-radius:22px;background:#fbfcf8;box-shadow:0 24px 80px rgba(0,0,0,.22)}
@@ -183,8 +174,8 @@ h1,h2,h3,.section-head h2,.about h2,.booking-copy h2,.contact h2{font-family:'Co
 <main>
 <section class="top-promotions" id="top-promotions" aria-labelledby="top-promotions-title">
  <div class="wrap top-promotions-inner">
-  <div class="top-promotions-heading"><div><div class="eyebrow">??????????? ???????????</div><h2 id="top-promotions-title">????? ??????</h2><p>?????????? ??????????? ? ???????? ???? ? ???????? ???? ?????.</p></div><button class="btn" type="button" data-open-promotions>??? ?????</button></div>
-  <div class="top-promotion-grid" data-top-promotion-list><p class="top-promotions-loading">????????? ?????????? ????????????</p></div>
+  <div class="top-promotions-heading"><div><div class="eyebrow">СПЕЦИАЛЬНЫЕ ПРЕДЛОЖЕНИЯ</div><h2 id="top-promotions-title">Акции салона</h2><p>Выберите предложение и откройте подробности.</p></div><button class="btn" type="button" data-open-promotions>Все акции</button></div>
+  <div class="top-promotion-grid" data-top-promotion-list><p class="top-promotions-loading">Загружаем актуальные предложения…</p></div>
  </div>
 </section>
 <section class="fortuna-hero" id="home">
@@ -226,9 +217,6 @@ h1,h2,h3,.section-head h2,.about h2,.booking-copy h2,.contact h2{font-family:'Co
 </div></form></div></div></section>
 <section class="contact" id="contacts"><div class="wrap"><div class="eyebrow">Будем рады знакомству</div><h2>Есть вопросы?</h2><p>Свяжись с нами — поможем выбрать услугу и ответим на вопросы.</p><a class="btn" href="#booking">Оставить заявку</a></div></section>
 </main>
-<section class="masters-links" aria-labelledby="masters-title"><div class="wrap masters-links-inner"><h2 id="masters-title">МАСТЕРА</h2><nav aria-label="Информация о мастерах"><button class="masters-open" type="button" data-open-specialists>Специалисты</button><span>Контакты</span><button class="masters-open" type="button" data-open-promotions>Акции</button></nav></div></section>
-
-
 <div class="promotions-modal" data-promotions-modal hidden>
  <section class="promotions-dialog" role="dialog" aria-modal="true" aria-labelledby="promotions-title" tabindex="-1">
   <button class="promotions-close" type="button" data-close-promotions aria-label="Закрыть окно">×</button>
