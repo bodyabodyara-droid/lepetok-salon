@@ -160,7 +160,10 @@ class Handler(BaseHTTPRequestHandler):
             return self.send_json(200, {"ok": True, "promotions": promotion_rows(True)})
         if self.path in ("/api/health", "/health"):
             return self.send_json(200, {"ok": True, "service": "salon-booking"})
-        path = (ROOT / ("index.html" if self.path in ("/", "/index.html") else self.path.lstrip("/"))).resolve()
+        request_path = urllib.parse.urlsplit(self.path).path
+        if request_path in ("/", "/index.html"): request_path = "index.html"
+        elif request_path == "/admin": request_path = "admin.html"
+        path = (ROOT / request_path.lstrip("/")).resolve()
         if ROOT not in path.parents and path != ROOT / "index.html":
             return self.send_json(403, {"ok": False, "error": "Forbidden"})
         if not path.is_file() or path.suffix.lower() not in {".html", ".css", ".js", ".svg", ".png", ".jpg", ".webp"}:
