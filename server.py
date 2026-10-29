@@ -1,4 +1,8 @@
 import json
+import secrets
+import hashlib
+import hmac
+from http.cookies import SimpleCookie
 import os
 import re
 import sqlite3
@@ -18,6 +22,7 @@ DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 DB_PATH = Path(os.getenv("BOOKINGS_DB", str(ROOT / "bookings.sqlite3")))
 BOT_TOKEN = os.getenv("BOT_TOKEN", "").strip()
 ADMIN_ID = os.getenv("ADMIN_ID", "").strip()
+PROMOTIONS_ADMIN_PASSWORD = os.getenv("PROMOTIONS_ADMIN_PASSWORD", "").strip()
 PORT = int(os.getenv("PORT", "8080"))
 SERVICES = {"Наращивание", "Окрашивание", "Маникюр", "Брови"}
 
@@ -25,6 +30,9 @@ def init_db():
     if DATABASE_URL:
         import psycopg
         with psycopg.connect(DATABASE_URL) as db:
+            db.execute("""CREATE TABLE IF NOT EXISTS website_promotions (
+                id BIGSERIAL PRIMARY KEY, title TEXT NOT NULL, description TEXT NOT NULL DEFAULT '', image_url TEXT NOT NULL DEFAULT '', old_price TEXT NOT NULL DEFAULT '', new_price TEXT NOT NULL DEFAULT '', start_date DATE, end_date DATE, published BOOLEAN NOT NULL DEFAULT FALSE, created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )""")
             db.execute("""CREATE TABLE IF NOT EXISTS website_bookings (
                 id BIGSERIAL PRIMARY KEY,
                 name TEXT NOT NULL, phone TEXT NOT NULL, service TEXT NOT NULL,
@@ -35,6 +43,9 @@ def init_db():
     else:
         DB_PATH.parent.mkdir(parents=True, exist_ok=True)
         with sqlite3.connect(DB_PATH) as db:
+            db.execute("""CREATE TABLE IF NOT EXISTS website_promotions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, description TEXT NOT NULL DEFAULT '', image_url TEXT NOT NULL DEFAULT '', old_price TEXT NOT NULL DEFAULT '', new_price TEXT NOT NULL DEFAULT '', start_date TEXT, end_date TEXT, published INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )""")
             db.execute("""CREATE TABLE IF NOT EXISTS website_bookings (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL, phone TEXT NOT NULL, service TEXT NOT NULL,
@@ -58,6 +69,71 @@ def notify_admin(text):
         print("Telegram notification failed:", exc, flush=True)
         return False
 
+def promotion_rows(admin=False):
+    if DATABASE_URL:
+        import psycopg
+        with psycopg.connect(DATABASE_URL) as db:
+            if admin:
+                rows = db.execute("SELECT id,title,description,image_url,old_price,new_price,start_date,end_date,published FROM website_promotions ORDER BY id DESC").fetchall()
+            else:
+                rows = db.execute("SELECT id,title,description,image_url,old_price,new_price,start_date,end_date,published FROM website_promotions WHERE published=TRUE AND (start_date IS NULL OR start_date<=CURRENT_DATE) AND (end_date IS NULL OR end_date>=CURRENT_DATE) ORDER BY id DESC").fetchall()
+    else:
+        with sqlite3.connect(DB_PATH) as db:
+            db.row_factory = sqlite3.Row
+            if admin:
+                rows = db.execute("SELECT id,title,description,image_url,old_price,new_price,start_date,end_date,published FROM website_promotions ORDER BY id DESC").fetchall()
+            else:
+                today = date.today().isoformat()
+                rows = db.execute("SELECT id,title,description,image_url,old_price,new_price,start_date,end_date,published FROM website_promotions WHERE published=1 AND (start_date IS NULL OR start_date<=?) AND (end_date IS NULL OR end_date>=?) ORDER BY id DESC", (today,today)).fetchall()
+    keys = ["id","title","description","image_url","old_price","new_price","start_date","end_date","published"]
+    return [dict(zip(keys, row)) for row in rows]
+
+def admin_cookie_ok(handler):
+    if not PROMOTIONS_ADMIN_PASSWORD:
+        return False
+    cookie = SimpleCookie()
+    try: cookie.load(handler.headers.get("Cookie", ""))
+    except Exception: return False
+    morsel = cookie.get("salon_admin")
+    if not morsel: return False
+    expected = hmac.new(PROMOTIONS_ADMIN_PASSWORD.encode(), b"lepetok-promotions-admin", hashlib.sha256).hexdigest()
+    return hmac.compare_digest(morsel.value, expected)
+
+def save_promotion(data, promotion_id=None):
+    title = str(data.get("title", "")).strip()[:120]
+    description = str(data.get("description", "")).strip()[:1500]
+    image_url = str(data.get("image_url", "")).strip()[:1000]
+    old_price = str(data.get("old_price", "")).strip()[:40]
+    new_price = str(data.get("new_price", "")).strip()[:40]
+    start_date = str(data.get("start_date", "")).strip() or None
+    end_date = str(data.get("end_date", "")).strip() or None
+    published = bool(data.get("published", False))
+    if len(title) < 2: raise ValueError("??????? ???????? ????? (??????? 2 ???????).")
+    for value in (start_date, end_date):
+        if value:
+            try: date.fromisoformat(value)
+            except ValueError: raise ValueError("????????? ???? ?????.")
+    if start_date and end_date and end_date < start_date: raise ValueError("???? ????????? ?? ????? ???? ?????? ???? ??????.")
+    if image_url and not image_url.startswith(("https://", "http://")): raise ValueError("??? ???? ??????? ??????, ???????????? ? https:// ??? http://.")
+    vals=(title,description,image_url,old_price,new_price,start_date,end_date,published)
+    if DATABASE_URL:
+        import psycopg
+        with psycopg.connect(DATABASE_URL) as db:
+            if promotion_id:
+                cur=db.execute("UPDATE website_promotions SET title=%s,description=%s,image_url=%s,old_price=%s,new_price=%s,start_date=%s,end_date=%s,published=%s WHERE id=%s RETURNING id", vals+(promotion_id,))
+            else:
+                cur=db.execute("INSERT INTO website_promotions(title,description,image_url,old_price,new_price,start_date,end_date,published) VALUES(%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id", vals)
+            row=cur.fetchone()
+            if not row: raise ValueError("????? ?? ???????.")
+            return row[0]
+    with sqlite3.connect(DB_PATH) as db:
+        if promotion_id:
+            cur=db.execute("UPDATE website_promotions SET title=?,description=?,image_url=?,old_price=?,new_price=?,start_date=?,end_date=?,published=? WHERE id=?", vals+(promotion_id,))
+            if cur.rowcount == 0: raise ValueError("????? ?? ???????.")
+            return promotion_id
+        cur=db.execute("INSERT INTO website_promotions(title,description,image_url,old_price,new_price,start_date,end_date,published) VALUES(?,?,?,?,?,?,?,?)", vals)
+        return cur.lastrowid
+
 class Handler(BaseHTTPRequestHandler):
     def send_json(self, status, payload):
         data = json.dumps(payload, ensure_ascii=False).encode()
@@ -77,6 +153,11 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
+        if self.path == "/api/promotions":
+            return self.send_json(200, {"ok": True, "promotions": promotion_rows(False)})
+        if self.path == "/api/admin/promotions":
+            if not admin_cookie_ok(self): return self.send_json(401, {"ok": False, "error": "??????? ? ?????? ??????????."})
+            return self.send_json(200, {"ok": True, "promotions": promotion_rows(True)})
         if self.path in ("/api/health", "/health"):
             return self.send_json(200, {"ok": True, "service": "salon-booking"})
         path = (ROOT / ("index.html" if self.path in ("/", "/index.html") else self.path.lstrip("/"))).resolve()
@@ -94,6 +175,34 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def do_POST(self):
+        if self.path == "/api/admin/login":
+            if not PROMOTIONS_ADMIN_PASSWORD:
+                return self.send_json(503, {"ok": False, "error": "????????????? ??? ?? ???????? ?????? ? Render."})
+            try:
+                length=int(self.headers.get("Content-Length", "0"))
+                if length < 2 or length > 4000: raise ValueError()
+                data=json.loads(self.rfile.read(length).decode("utf-8"))
+            except Exception:
+                return self.send_json(400, {"ok": False, "error": "?? ??????? ????????? ?????."})
+            if not hmac.compare_digest(str(data.get("password", "")), PROMOTIONS_ADMIN_PASSWORD):
+                return self.send_json(401, {"ok": False, "error": "???????? ??????."})
+            token=hmac.new(PROMOTIONS_ADMIN_PASSWORD.encode(), b"lepetok-promotions-admin", hashlib.sha256).hexdigest()
+            self.send_response(200); self.send_header("Content-Type", "application/json; charset=utf-8"); self.send_header("Cache-Control", "no-store")
+            self.send_header("Set-Cookie", f"salon_admin={token}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=28800")
+            self.end_headers(); self.wfile.write(json.dumps({"ok":True},ensure_ascii=False).encode()); return
+        if self.path == "/api/admin/logout":
+            self.send_response(200); self.send_header("Content-Type", "application/json; charset=utf-8"); self.send_header("Set-Cookie", "salon_admin=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0"); self.end_headers(); self.wfile.write(b'{"ok":true}'); return
+        if self.path == "/api/admin/promotions":
+            if not admin_cookie_ok(self): return self.send_json(401, {"ok":False,"error":"??????? ? ?????? ??????????."})
+            try:
+                length=int(self.headers.get("Content-Length", "0"))
+                if length < 2 or length > 20000: raise ValueError()
+                data=json.loads(self.rfile.read(length).decode("utf-8"))
+                pid=save_promotion(data)
+                return self.send_json(201,{"ok":True,"id":pid})
+            except ValueError as exc: return self.send_json(400,{"ok":False,"error":str(exc)})
+            except Exception as exc:
+                print("Promotion save failed:",exc,flush=True); return self.send_json(500,{"ok":False,"error":"?? ??????? ????????? ?????."})
         if self.path != "/api/bookings":
             return self.send_json(404, {"ok": False, "error": "Not found"})
         try:
@@ -143,6 +252,31 @@ class Handler(BaseHTTPRequestHandler):
         print(f"Booking {booking_id} saved. Telegram notified: {notified}", flush=True)
         return self.send_json(201, {"ok": True, "booking_id": booking_id, "notified": notified,
             "message": "Заявка сохранена. " + ("Уведомление отправлено мастеру." if notified else "Для подтверждения записи мастер свяжется с вами.")})
+
+    def do_PUT(self):
+        if not self.path.startswith("/api/admin/promotions/") or not admin_cookie_ok(self): return self.send_json(401,{"ok":False,"error":"??? ???????."})
+        try:
+            pid=int(self.path.rsplit("/",1)[1]); length=int(self.headers.get("Content-Length","0"))
+            if length < 2 or length > 20000: raise ValueError()
+            data=json.loads(self.rfile.read(length).decode("utf-8")); save_promotion(data,pid)
+            return self.send_json(200,{"ok":True,"id":pid})
+        except ValueError as exc: return self.send_json(400,{"ok":False,"error":str(exc)})
+        except Exception as exc:
+            print("Promotion update failed:",exc,flush=True); return self.send_json(500,{"ok":False,"error":"?? ??????? ???????? ?????."})
+
+    def do_DELETE(self):
+        if not self.path.startswith("/api/admin/promotions/") or not admin_cookie_ok(self): return self.send_json(401,{"ok":False,"error":"??? ???????."})
+        try:
+            pid=int(self.path.rsplit("/",1)[1])
+            if DATABASE_URL:
+                import psycopg
+                with psycopg.connect(DATABASE_URL) as db: cur=db.execute("DELETE FROM website_promotions WHERE id=%s",(pid,))
+            else:
+                with sqlite3.connect(DB_PATH) as db: cur=db.execute("DELETE FROM website_promotions WHERE id=?",(pid,))
+            if cur.rowcount == 0: return self.send_json(404,{"ok":False,"error":"????? ?? ???????."})
+            return self.send_json(200,{"ok":True})
+        except Exception as exc:
+            print("Promotion delete failed:",exc,flush=True); return self.send_json(500,{"ok":False,"error":"?? ??????? ??????? ?????."})
 
     def log_message(self, fmt, *args):
         print("%s - %s" % (self.address_string(), fmt % args), flush=True)
