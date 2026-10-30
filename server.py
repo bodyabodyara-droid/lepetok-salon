@@ -102,7 +102,7 @@ def admin_cookie_ok(handler):
 def save_promotion(data, promotion_id=None):
     title = str(data.get("title", "")).strip()[:120]
     description = str(data.get("description", "")).strip()[:1500]
-    image_url = str(data.get("image_url", "")).strip()[:1000]
+    image_url = str(data.get("image_url", "")).strip()[:2800000]
     old_price = str(data.get("old_price", "")).strip()[:40]
     new_price = str(data.get("new_price", "")).strip()[:40]
     start_date = str(data.get("start_date", "")).strip() or None
@@ -114,7 +114,10 @@ def save_promotion(data, promotion_id=None):
             try: date.fromisoformat(value)
             except ValueError: raise ValueError("????????? ???? ?????.")
     if start_date and end_date and end_date < start_date: raise ValueError("???? ????????? ?? ????? ???? ?????? ???? ??????.")
-    if image_url and not image_url.startswith(("https://", "http://")): raise ValueError("??? ???? ??????? ??????, ???????????? ? https:// ??? http://.")
+    if image_url and not (image_url.startswith(("https://", "http://")) or re.fullmatch(r"data:image/(?:jpeg|png|webp|gif);base64,[A-Za-z0-9+/=]+", image_url)):
+        raise ValueError("Укажите ссылку https:// или загрузите изображение допустимого формата.")
+    if image_url.startswith("data:image/") and len(image_url) > 2800000:
+        raise ValueError("Изображение слишком большое. Максимальный размер файла — 2 МБ.")
     vals=(title,description,image_url,old_price,new_price,start_date,end_date,published)
     if DATABASE_URL:
         import psycopg
@@ -199,7 +202,7 @@ class Handler(BaseHTTPRequestHandler):
             if not admin_cookie_ok(self): return self.send_json(401, {"ok":False,"error":"??????? ? ?????? ??????????."})
             try:
                 length=int(self.headers.get("Content-Length", "0"))
-                if length < 2 or length > 20000: raise ValueError()
+                if length < 2 or length > 4000000: raise ValueError()
                 data=json.loads(self.rfile.read(length).decode("utf-8"))
                 pid=save_promotion(data)
                 return self.send_json(201,{"ok":True,"id":pid})
@@ -260,7 +263,7 @@ class Handler(BaseHTTPRequestHandler):
         if not self.path.startswith("/api/admin/promotions/") or not admin_cookie_ok(self): return self.send_json(401,{"ok":False,"error":"??? ???????."})
         try:
             pid=int(self.path.rsplit("/",1)[1]); length=int(self.headers.get("Content-Length","0"))
-            if length < 2 or length > 20000: raise ValueError()
+            if length < 2 or length > 4000000: raise ValueError()
             data=json.loads(self.rfile.read(length).decode("utf-8")); save_promotion(data,pid)
             return self.send_json(200,{"ok":True,"id":pid})
         except ValueError as exc: return self.send_json(400,{"ok":False,"error":str(exc)})
