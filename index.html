@@ -176,15 +176,20 @@ h1,h2,h3,.section-head h2,.about h2,.booking-copy h2,.contact h2{font-family:'Co
 /* Promotion artwork: compact thumbnail on every screen, including mobile. */
 .top-promotion-card img,.promotion-card img{width:25%!important;max-width:160px!important;height:48px!important;max-height:48px!important;object-fit:cover!important;display:block!important;margin:10px auto 0!important;border-radius:8px!important}
 @media(max-width:600px){.top-promotion-card img,.promotion-card img{width:25%!important;max-width:120px!important;height:48px!important;max-height:48px!important}}
-/* Promotions carousel: horizontal scroll, visible scrollbar, mouse drag and touch swipe */
-.top-promotion-grid{display:flex!important;gap:18px;overflow-x:auto;overflow-y:hidden;padding:4px 2px 18px;scroll-snap-type:x mandatory;scroll-behavior:smooth;overscroll-behavior-x:contain;cursor:grab;scrollbar-width:thin;scrollbar-color:#849b5d #e3e9d9}
+/* Promotions carousel: compact cards, real horizontal scrollbar, arrows and touch support */
+.top-promotions-inner{min-width:0}
+.top-promotion-grid{display:flex!important;flex-flow:row nowrap!important;gap:18px;max-width:100%;box-sizing:border-box;overflow-x:auto!important;overflow-y:hidden!important;padding:4px 2px 18px;scroll-snap-type:x mandatory;scroll-behavior:smooth;overscroll-behavior-x:contain;touch-action:pan-x pan-y;cursor:grab;scrollbar-width:auto;scrollbar-color:#849b5d #e3e9d9}
 .top-promotion-grid:active{cursor:grabbing}
-.top-promotion-grid::-webkit-scrollbar{height:10px}
+.top-promotion-grid::-webkit-scrollbar{display:block;height:12px}
 .top-promotion-grid::-webkit-scrollbar-track{background:#e3e9d9;border-radius:999px}
 .top-promotion-grid::-webkit-scrollbar-thumb{background:#849b5d;border-radius:999px;border:2px solid #e3e9d9}
-.top-promotion-grid .top-promotion-card{flex:0 0 clamp(240px,28vw,300px);min-width:0;scroll-snap-align:start}
-.top-promotions-loading,.top-promotions-empty{flex:0 0 100%;width:100%}
-@media(max-width:600px){.top-promotion-grid{gap:12px}.top-promotion-grid .top-promotion-card{flex-basis:78vw;max-width:300px}}
+.top-promotion-grid .top-promotion-card{box-sizing:border-box;flex:0 0 clamp(240px,28vw,300px)!important;width:clamp(240px,28vw,300px);min-width:0;scroll-snap-align:start}
+.top-promotions #top-promotion-list img,.top-promotions [data-top-promotion-list] img,.top-promotions img{display:block!important;width:50%!important;max-width:160px!important;height:auto!important;max-height:180px!important;aspect-ratio:auto;object-fit:contain!important;margin:12px auto 0!important;border-radius:8px!important}
+.top-promotions-loading,.top-promotions-empty{flex:0 0 100%;width:100%;box-sizing:border-box}
+.promotion-carousel-controls{display:flex;justify-content:flex-end;gap:8px;margin:0 0 8px}
+.promotion-carousel-controls button{width:38px;height:34px;border:1px solid #849b5d;border-radius:18px;background:#fff;color:#40532c;font-size:20px;cursor:pointer}
+.promotion-carousel-controls button:disabled{opacity:.35;cursor:default}
+@media(max-width:600px){.top-promotion-grid{gap:12px;padding-bottom:16px}.top-promotion-grid .top-promotion-card{flex-basis:78vw!important;width:78vw;max-width:300px}.top-promotions [data-top-promotion-list] img,.top-promotions img{width:50%!important;max-width:145px!important;max-height:160px!important}.promotion-carousel-controls button{width:42px;height:38px}}
 </style>
 </head>
 <body>
@@ -307,7 +312,24 @@ promotionsOpen?.addEventListener('click',()=>{promotionsModal.hidden=false;docum
 function closePromotions(){promotionsModal.hidden=true;document.body.style.overflow='';promotionsOpen?.focus();}
 promotionsClose?.addEventListener('click',closePromotions);promotionsModal?.addEventListener('click',e=>{if(e.target===promotionsModal)closePromotions();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&promotionsModal&&!promotionsModal.hidden)closePromotions();});
 
-// Let the promotions row behave like a real carousel: wheel-to-horizontal and click-drag.
+// Add visible previous/next controls and keep them in sync with the horizontal carousel.
+if(topPromotionList){
+ const controls=document.createElement('div');
+ controls.className='promotion-carousel-controls';
+ controls.innerHTML='<button type="button" aria-label="Предыдущие акции" data-promotion-prev>‹</button><button type="button" aria-label="Следующие акции" data-promotion-next>›</button>';
+ topPromotionList.parentNode.insertBefore(controls,topPromotionList);
+ const prev=controls.querySelector('[data-promotion-prev]');
+ const next=controls.querySelector('[data-promotion-next]');
+ const updateControls=()=>{const max=topPromotionList.scrollWidth-topPromotionList.clientWidth;prev.disabled=topPromotionList.scrollLeft<=2;next.disabled=max<=2||topPromotionList.scrollLeft>=max-2;controls.hidden=max<=2;};
+ prev.addEventListener('click',()=>topPromotionList.scrollBy({left:-topPromotionList.clientWidth*.8,behavior:'smooth'}));
+ next.addEventListener('click',()=>topPromotionList.scrollBy({left:topPromotionList.clientWidth*.8,behavior:'smooth'}));
+ topPromotionList.addEventListener('scroll',updateControls,{passive:true});
+ new ResizeObserver(updateControls).observe(topPromotionList);
+ new MutationObserver(()=>requestAnimationFrame(updateControls)).observe(topPromotionList,{childList:true});
+ window.addEventListener('resize',updateControls);
+ setTimeout(updateControls,100);
+}
+// Let the promotions row behave like a real carousel: horizontal wheel and click-drag.
 if(topPromotionList){
  topPromotionList.addEventListener('wheel',event=>{
   if(topPromotionList.scrollWidth<=topPromotionList.clientWidth)return;
