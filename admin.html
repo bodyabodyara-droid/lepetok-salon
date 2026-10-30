@@ -36,7 +36,7 @@ input:focus,textarea:focus{outline:none;border-color:#9869a8;box-shadow:0 0 0 3p
 <section class="panel"><h2>Мои акции</h2><p class="muted">Опубликованные предложения отображаются на сайте. Черновики видны только администраторам.</p><div id="promoItems">Загрузка…</div></section></div></main>
 <script>
 const $=id=>document.getElementById(id);let items=[];let uploadedImage='';
-async function api(url,opts={}){const r=await fetch(url,{credentials:'same-origin',headers:{'Content-Type':'application/json',...(opts.headers||{})},...opts});let d={};try{d=await r.json()}catch{}if(!r.ok)throw Error(d.error||'Ошибка запроса');return d}
+async function api(url,opts={}){const r=await fetch(url,{credentials:'same-origin',headers:{'Content-Type':'application/json',...(opts.headers||{})},...opts});let d={};try{d=await r.json()}catch{}if(!r.ok){const detail=d.error||('Сервер ответил ошибкой HTTP '+r.status);throw Error(detail)}if(!d||typeof d!=='object')throw Error('Сервер вернул неожиданный ответ');return d}
 function resetForm(){$('promoForm').reset();$('promoId').value='';$('formTitle').textContent='Новая акция';$('formNotice').textContent='';uploadedImage='';$('imagePreview').removeAttribute('src');$('imagePreview').style.display='none'}
 function showAdmin(){$('loginPanel').classList.add('hidden');$('adminArea').classList.remove('hidden');loadItems()}
 $('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginNotice').textContent='Проверяем пароль…';try{await api('/api/admin/login',{method:'POST',body:JSON.stringify({password:$('password').value})});$('password').value='';showAdmin();$('loginNotice').textContent=''}catch(err){$('loginNotice').textContent=err.message}});
