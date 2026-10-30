@@ -139,7 +139,7 @@ def save_promotion(data, promotion_id=None):
 
 class Handler(BaseHTTPRequestHandler):
     def send_json(self, status, payload):
-        data = json.dumps(payload, ensure_ascii=False).encode()
+        data = json.dumps(payload, ensure_ascii=False, default=lambda value: value.isoformat() if hasattr(value, "isoformat") else str(value)).encode()
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(data)))
