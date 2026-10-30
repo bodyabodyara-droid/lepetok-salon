@@ -176,6 +176,15 @@ h1,h2,h3,.section-head h2,.about h2,.booking-copy h2,.contact h2{font-family:'Co
 /* Promotion artwork: compact thumbnail on every screen, including mobile. */
 .top-promotion-card img,.promotion-card img{width:25%!important;max-width:160px!important;height:48px!important;max-height:48px!important;object-fit:cover!important;display:block!important;margin:10px auto 0!important;border-radius:8px!important}
 @media(max-width:600px){.top-promotion-card img,.promotion-card img{width:25%!important;max-width:120px!important;height:48px!important;max-height:48px!important}}
+/* Promotions carousel: horizontal scroll, visible scrollbar, mouse drag and touch swipe */
+.top-promotion-grid{display:flex!important;gap:18px;overflow-x:auto;overflow-y:hidden;padding:4px 2px 18px;scroll-snap-type:x mandatory;scroll-behavior:smooth;overscroll-behavior-x:contain;cursor:grab;scrollbar-width:thin;scrollbar-color:#849b5d #e3e9d9}
+.top-promotion-grid:active{cursor:grabbing}
+.top-promotion-grid::-webkit-scrollbar{height:10px}
+.top-promotion-grid::-webkit-scrollbar-track{background:#e3e9d9;border-radius:999px}
+.top-promotion-grid::-webkit-scrollbar-thumb{background:#849b5d;border-radius:999px;border:2px solid #e3e9d9}
+.top-promotion-grid .top-promotion-card{flex:0 0 clamp(240px,28vw,300px);min-width:0;scroll-snap-align:start}
+.top-promotions-loading,.top-promotions-empty{flex:0 0 100%;width:100%}
+@media(max-width:600px){.top-promotion-grid{gap:12px}.top-promotion-grid .top-promotion-card{flex-basis:78vw;max-width:300px}}
 </style>
 </head>
 <body>
@@ -297,6 +306,31 @@ async function loadPromotions(){try{const response=await fetch('/api/promotions'
 promotionsOpen?.addEventListener('click',()=>{promotionsModal.hidden=false;document.body.style.overflow='hidden';promotionsModal.querySelector('[role="dialog"]').focus();loadPromotions();});
 function closePromotions(){promotionsModal.hidden=true;document.body.style.overflow='';promotionsOpen?.focus();}
 promotionsClose?.addEventListener('click',closePromotions);promotionsModal?.addEventListener('click',e=>{if(e.target===promotionsModal)closePromotions();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&promotionsModal&&!promotionsModal.hidden)closePromotions();});
+
+// Let the promotions row behave like a real carousel: wheel-to-horizontal and click-drag.
+if(topPromotionList){
+ topPromotionList.addEventListener('wheel',event=>{
+  if(topPromotionList.scrollWidth<=topPromotionList.clientWidth)return;
+  if(Math.abs(event.deltaY)>Math.abs(event.deltaX)){event.preventDefault();topPromotionList.scrollLeft+=event.deltaY;}
+ },{passive:false});
+ let isDragging=false,startX=0,startScroll=0,moved=false;
+ topPromotionList.addEventListener('pointerdown',event=>{
+  if(event.pointerType==='touch'||event.button!==0)return;
+  isDragging=true;moved=false;startX=event.clientX;startScroll=topPromotionList.scrollLeft;
+  topPromotionList.setPointerCapture?.(event.pointerId);
+ });
+ topPromotionList.addEventListener('pointermove',event=>{
+  if(!isDragging)return;
+  const delta=event.clientX-startX;
+  if(Math.abs(delta)>4)moved=true;
+  if(moved)topPromotionList.scrollLeft=startScroll-delta;
+ });
+ const stopDragging=()=>{isDragging=false;};
+ topPromotionList.addEventListener('pointerup',stopDragging);
+ topPromotionList.addEventListener('pointercancel',stopDragging);
+ topPromotionList.addEventListener('lostpointercapture',stopDragging);
+ topPromotionList.addEventListener('click',event=>{if(moved){event.preventDefault();event.stopPropagation();moved=false;}},true);
+}
 loadPromotions();
 
 </script>
