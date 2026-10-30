@@ -161,6 +161,18 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == "/api/admin/promotions":
             if not admin_cookie_ok(self): return self.send_json(401, {"ok": False, "error": "??????? ? ?????? ??????????."})
             return self.send_json(200, {"ok": True, "promotions": promotion_rows(True)})
+        if self.path == "/api/admin/bookings":
+            if not admin_cookie_ok(self): return self.send_json(401, {"ok": False, "error": "Unauthorized"})
+            if DATABASE_URL:
+                import psycopg
+                with psycopg.connect(DATABASE_URL) as db:
+                    rows = db.execute("SELECT id,name,phone,service,booking_date,preferred_time,contact_method,comment,created_at,status FROM website_bookings ORDER BY booking_date DESC, preferred_time DESC, id DESC LIMIT 500").fetchall()
+            else:
+                with sqlite3.connect(DB_PATH) as db:
+                    db.row_factory = sqlite3.Row
+                    rows = db.execute("SELECT id,name,phone,service,booking_date,preferred_time,contact_method,comment,created_at,status FROM website_bookings ORDER BY booking_date DESC, preferred_time DESC, id DESC LIMIT 500").fetchall()
+            keys = ["id","name","phone","service","booking_date","preferred_time","contact_method","comment","created_at","status"]
+            return self.send_json(200, {"ok": True, "bookings": [dict(zip(keys, row)) for row in rows]})
         if self.path in ("/api/health", "/health"):
             return self.send_json(200, {"ok": True, "service": "salon-booking"})
         request_path = urllib.parse.urlsplit(self.path).path
@@ -269,6 +281,32 @@ class Handler(BaseHTTPRequestHandler):
         except ValueError as exc: return self.send_json(400,{"ok":False,"error":str(exc)})
         except Exception as exc:
             print("Promotion update failed:",exc,flush=True); return self.send_json(500,{"ok":False,"error":"?? ??????? ???????? ?????."})
+
+    def do_PATCH(self):
+        if not self.path.startswith("/api/admin/bookings/") or not admin_cookie_ok(self):
+            return self.send_json(401, {"ok": False, "error": "Unauthorized"})
+        try:
+            booking_id = int(self.path.rsplit("/", 1)[1])
+            length = int(self.headers.get("Content-Length", "0"))
+            if length < 2 or length > 4000: raise ValueError("Invalid request")
+            data = json.loads(self.rfile.read(length).decode("utf-8"))
+            status = str(data.get("status", ""))
+            if status not in {"new", "confirmed", "completed", "cancelled"}:
+                raise ValueError("Invalid booking status")
+            if DATABASE_URL:
+                import psycopg
+                with psycopg.connect(DATABASE_URL) as db:
+                    cur = db.execute("UPDATE website_bookings SET status=%s WHERE id=%s", (status, booking_id))
+            else:
+                with sqlite3.connect(DB_PATH) as db:
+                    cur = db.execute("UPDATE website_bookings SET status=? WHERE id=?", (status, booking_id))
+            if cur.rowcount == 0: return self.send_json(404, {"ok": False, "error": "Booking not found"})
+            return self.send_json(200, {"ok": True, "id": booking_id, "status": status})
+        except ValueError as exc:
+            return self.send_json(400, {"ok": False, "error": str(exc)})
+        except Exception as exc:
+            print("Booking status update failed:", exc, flush=True)
+            return self.send_json(500, {"ok": False, "error": "Could not update booking"})
 
     def do_DELETE(self):
         if not self.path.startswith("/api/admin/promotions/") or not admin_cookie_ok(self): return self.send_json(401,{"ok":False,"error":"??? ???????."})
