@@ -192,6 +192,7 @@ h1,h2,h3,.section-head h2,.about h2,.booking-copy h2,.contact h2{font-family:'Co
 @media(max-width:600px){.top-promotion-grid{gap:12px;padding-bottom:16px}.top-promotion-grid .top-promotion-card{flex-basis:78vw!important;width:78vw;max-width:300px}.promotion-carousel-controls button{width:42px;height:38px}}
 /* Final mobile hero alignment: scale the orbit to the phone viewport and lift it slightly. */
 @media(max-width:480px){.fortuna-hero .orbit-scene{width:min(70vw,360px)!important;transform:translateY(-8px)!important;margin:auto 0}.fortuna-hero .orbit-caption{bottom:-3%;font-size:8px;letter-spacing:.12em}.fortuna-hero .hero-bottom{padding-bottom:8px}}
+.admin-entry{font-size:12px;color:var(--muted);text-decoration:underline;text-underline-offset:3px;opacity:.8}.admin-entry:hover{opacity:1;color:var(--rose-dark)}
 </style>
 </head>
 <body>
@@ -258,7 +259,7 @@ h1,h2,h3,.section-head h2,.about h2,.booking-copy h2,.contact h2{font-family:'Co
   <div class="specialists-placeholder">Карточки специалистов скоро появятся здесь. Добавим фотографии, имена, специализации и услуги, когда подготовим информацию.</div>
  </section>
 </div>
-<footer class="footer"><div class="wrap footer-row"><span>© <span id="year"></span> Будь счастлив · Салон красоты</span><span>Услуги и цены уточняются при подтверждении записи</span></div></footer>
+<footer class="footer"><div class="wrap footer-row"><span>© <span id="year"></span> Будь счастлив · Салон красоты</span><span>Услуги и цены уточняются при подтверждении записи</span><a class="admin-entry" href="/admin">&#1042;&#1093;&#1086;&#1076; &#1076;&#1083;&#1103; &#1072;&#1076;&#1084;&#1080;&#1085;&#1080;&#1089;&#1090;&#1088;&#1072;&#1090;&#1086;&#1088;&#1072;</a></div></footer>
 <script>
 const dateInput=document.getElementById('date');
 const localToday=new Date();dateInput.min=new Date(localToday.getTime()-localToday.getTimezoneOffset()*60000).toISOString().slice(0,10);
