@@ -355,6 +355,26 @@ if(topPromotionList){
  topPromotionList.addEventListener('lostpointercapture',stopDragging);
  topPromotionList.addEventListener('click',event=>{if(moved){event.preventDefault();event.stopPropagation();moved=false;}},true);
 }
+async function loadServicesCatalog(){
+ try{
+  const response=await fetch('/api/services',{cache:'no-store'});
+  if(!response.ok)throw new Error('HTTP '+response.status);
+  const data=await response.json(),services=data.services||[];
+  const groups=new Map();
+  services.forEach(item=>{if(!groups.has(item.category))groups.set(item.category,{icon:item.icon||'\u2726',items:[]});groups.get(item.category).items.push(item);});
+  const catalog=document.querySelector('#services .catalog');
+  if(!services.length){
+   if(catalog)catalog.innerHTML='<p>\u0423\u0441\u043b\u0443\u0433\u0438 \u043f\u043e\u043a\u0430 \u043d\u0435 \u0434\u043e\u0431\u0430\u0432\u043b\u0435\u043d\u044b.</p>';
+   const emptySelect=document.querySelector('#service');
+   if(emptySelect)emptySelect.innerHTML='<option value="">\u041d\u0435\u0442 \u0434\u043e\u0441\u0442\u0443\u043f\u043d\u044b\u0445 \u0443\u0441\u043b\u0443\u0433</option>';
+   return;
+  }
+  if(catalog)catalog.innerHTML=Array.from(groups.entries()).map(([category,group])=>'<article class="service catalog-card"><div class="icon">'+escapePromotionText(group.icon)+'</div><h3>'+escapePromotionText(category)+'</h3><ul class="price-list">'+group.items.map(item=>'<li><span>'+escapePromotionText(item.name)+(item.duration_minutes?' <small>\u00b7 '+Number(item.duration_minutes)+' \u043c\u0438\u043d.</small>':'')+'</span><b>'+escapePromotionText(item.price)+'</b></li>').join('')+'</ul></article>').join('');
+  const select=document.querySelector('#service');
+  if(select){const selected=select.value;select.innerHTML='<option value="">\u0412\u044b\u0431\u0435\u0440\u0438 \u0443\u0441\u043b\u0443\u0433\u0443</option>'+Array.from(groups.keys()).map(category=>'<option value="'+escapePromotionText(category)+'">'+escapePromotionText(category)+'</option>').join('');if(groups.has(selected))select.value=selected;}
+ }catch(error){console.error('Service catalog loading failed:',error);}
+}
+loadServicesCatalog();
 loadPromotions();
 
 </script>

@@ -24,7 +24,6 @@ BOT_TOKEN = os.getenv("BOT_TOKEN", "").strip()
 ADMIN_ID = os.getenv("ADMIN_ID", "").strip()
 PROMOTIONS_ADMIN_PASSWORD = os.getenv("PROMOTIONS_ADMIN_PASSWORD", "").strip()
 PORT = int(os.getenv("PORT", "8080"))
-SERVICES = {"Наращивание", "Окрашивание", "Маникюр", "Брови"}
 
 def init_db():
     if DATABASE_URL:
@@ -53,6 +52,144 @@ def init_db():
                 contact_method TEXT NOT NULL DEFAULT 'Телефон', comment TEXT NOT NULL DEFAULT '',
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, status TEXT NOT NULL DEFAULT 'new'
             )""")
+
+def init_services():
+    """Create the editable price catalog and import the current HTML catalog once."""
+    if DATABASE_URL:
+        import psycopg
+        with psycopg.connect(DATABASE_URL) as db:
+            db.execute("CREATE TABLE IF NOT EXISTS website_service_meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
+            db.execute("""CREATE TABLE IF NOT EXISTS website_services (
+                id BIGSERIAL PRIMARY KEY,
+                category TEXT NOT NULL,
+                icon TEXT NOT NULL DEFAULT '✦',
+                name TEXT NOT NULL,
+                price TEXT NOT NULL DEFAULT '',
+                duration_minutes INTEGER,
+                active BOOLEAN NOT NULL DEFAULT TRUE,
+                sort_order INTEGER NOT NULL DEFAULT 0,
+                created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )""")
+            seeded = db.execute("SELECT value FROM website_service_meta WHERE key='catalog_initialized'").fetchone()
+            count = db.execute("SELECT COUNT(*) FROM website_services").fetchone()[0]
+            if not seeded:
+                if count == 0:
+                    _seed_services(db, "%s")
+                db.execute("INSERT INTO website_service_meta(key,value) VALUES('catalog_initialized','1')")
+    else:
+        with sqlite3.connect(DB_PATH) as db:
+            db.execute("CREATE TABLE IF NOT EXISTS website_service_meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
+            db.execute("""CREATE TABLE IF NOT EXISTS website_services (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                category TEXT NOT NULL,
+                icon TEXT NOT NULL DEFAULT '✦',
+                name TEXT NOT NULL,
+                price TEXT NOT NULL DEFAULT '',
+                duration_minutes INTEGER,
+                active INTEGER NOT NULL DEFAULT 1,
+                sort_order INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )""")
+            seeded = db.execute("SELECT value FROM website_service_meta WHERE key='catalog_initialized'").fetchone()
+            count = db.execute("SELECT COUNT(*) FROM website_services").fetchone()[0]
+            if not seeded:
+                if count == 0:
+                    _seed_services(db, "?")
+                db.execute("INSERT INTO website_service_meta(key,value) VALUES('catalog_initialized','1')")
+
+def _seed_services(db, placeholder):
+    """Read the existing visible catalog so first deployment preserves all current prices."""
+    import html
+    import re
+    source = (ROOT / "index.html").read_text(encoding="utf-8")
+    cards = re.findall(r'<article class="service catalog-card">(.*?)</article>', source, re.S)
+    rows = []
+    for card in cards:
+        heading = re.search(r'<h3>(.*?)</h3>', card, re.S)
+        icon_match = re.search(r'<div class="icon">(.*?)</div>', card, re.S)
+        if not heading:
+            continue
+        category = html.unescape(re.sub(r'<.*?>', '', heading.group(1))).strip()
+        icon = html.unescape(re.sub(r'<.*?>', '', icon_match.group(1))).strip() if icon_match else "✦"
+        for item in re.findall(r'<li>\s*<span>(.*?)</span>\s*<b>(.*?)</b>\s*</li>', card, re.S):
+            name = html.unescape(re.sub(r'<.*?>', '', item[0])).strip()
+            price = html.unescape(re.sub(r'<.*?>', '', item[1])).strip()
+            if name:
+                rows.append((category, icon or "✦", name, price, None, len(rows)))
+    if not rows:
+        rows = [("Услуги", "✦", "Новая услуга", "Уточняйте", None, 0)]
+    sql = "INSERT INTO website_services(category,icon,name,price,duration_minutes,sort_order) VALUES(" + ",".join([placeholder] * 6) + ")"
+    for row in rows:
+        db.execute(sql, row)
+
+def service_rows(admin=False):
+    if DATABASE_URL:
+        import psycopg
+        with psycopg.connect(DATABASE_URL) as db:
+            where = "" if admin else " WHERE active=TRUE"
+            rows = db.execute("SELECT id,category,icon,name,price,duration_minutes,active,sort_order FROM website_services" + where + " ORDER BY sort_order,id").fetchall()
+    else:
+        with sqlite3.connect(DB_PATH) as db:
+            db.row_factory = sqlite3.Row
+            where = "" if admin else " WHERE active=1"
+            rows = db.execute("SELECT id,category,icon,name,price,duration_minutes,active,sort_order FROM website_services" + where + " ORDER BY sort_order,id").fetchall()
+    keys = ["id","category","icon","name","price","duration_minutes","active","sort_order"]
+    return [dict(zip(keys, row)) for row in rows]
+
+def save_service(data, service_id=None):
+    category = re.sub(r"\s+", " ", str(data.get("category", "")).strip())[:100]
+    icon = str(data.get("icon", "✦")).strip()[:12] or "✦"
+    name = re.sub(r"\s+", " ", str(data.get("name", "")).strip())[:140]
+    price = str(data.get("price", "")).strip()[:60]
+    duration = data.get("duration_minutes")
+    active = bool(data.get("active", True))
+    try:
+        duration = int(duration) if duration not in (None, "") else None
+    except (TypeError, ValueError):
+        raise ValueError("Длительность должна быть числом минут.")
+    if duration is not None and not 1 <= duration <= 1440:
+        raise ValueError("Длительность должна быть от 1 до 1440 минут.")
+    if len(category) < 2 or len(name) < 2 or not price:
+        raise ValueError("Укажите категорию, название услуги и цену.")
+    sort_order = int(data.get("sort_order") or 0)
+    vals = (category, icon, name, price, duration, active, sort_order)
+    if DATABASE_URL:
+        import psycopg
+        with psycopg.connect(DATABASE_URL) as db:
+            if service_id:
+                cur = db.execute("UPDATE website_services SET category=%s,icon=%s,name=%s,price=%s,duration_minutes=%s,active=%s,sort_order=%s WHERE id=%s RETURNING id", vals + (service_id,))
+                if not cur.fetchone(): raise ValueError("Услуга не найдена.")
+                return service_id
+            cur = db.execute("INSERT INTO website_services(category,icon,name,price,duration_minutes,active,sort_order) VALUES(%s,%s,%s,%s,%s,%s,%s) RETURNING id", vals)
+            return cur.fetchone()[0]
+    with sqlite3.connect(DB_PATH) as db:
+        if service_id:
+            cur = db.execute("UPDATE website_services SET category=?,icon=?,name=?,price=?,duration_minutes=?,active=?,sort_order=? WHERE id=?", vals + (service_id,))
+            if cur.rowcount == 0: raise ValueError("Услуга не найдена.")
+            return service_id
+        cur = db.execute("INSERT INTO website_services(category,icon,name,price,duration_minutes,active,sort_order) VALUES(?,?,?,?,?,?,?)", vals)
+        return cur.lastrowid
+
+def delete_service(service_id):
+    if DATABASE_URL:
+        import psycopg
+        with psycopg.connect(DATABASE_URL) as db:
+            cur = db.execute("DELETE FROM website_services WHERE id=%s", (service_id,))
+    else:
+        with sqlite3.connect(DB_PATH) as db:
+            cur = db.execute("DELETE FROM website_services WHERE id=?", (service_id,))
+    if cur.rowcount == 0:
+        raise ValueError("Услуга не найдена.")
+
+def valid_booking_service(value):
+    if DATABASE_URL:
+        import psycopg
+        with psycopg.connect(DATABASE_URL) as db:
+            row = db.execute("SELECT 1 FROM website_services WHERE active=TRUE AND category=%s LIMIT 1", (value,)).fetchone()
+    else:
+        with sqlite3.connect(DB_PATH) as db:
+            row = db.execute("SELECT 1 FROM website_services WHERE active=1 AND category=? LIMIT 1", (value,)).fetchone()
+    return bool(row)
 
 def notify_admin(text):
     if not BOT_TOKEN or not ADMIN_ID or not ADMIN_ID.isdigit():
@@ -156,6 +293,11 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
+        if self.path == "/api/services":
+            return self.send_json(200, {"ok": True, "services": service_rows(False)})
+        if self.path == "/api/admin/services":
+            if not admin_cookie_ok(self): return self.send_json(401, {"ok": False, "error": "Требуется вход администратора."})
+            return self.send_json(200, {"ok": True, "services": service_rows(True)})
         if self.path == "/api/promotions":
             return self.send_json(200, {"ok": True, "promotions": promotion_rows(False)})
         if self.path == "/api/admin/promotions":
@@ -210,6 +352,18 @@ class Handler(BaseHTTPRequestHandler):
             self.end_headers(); self.wfile.write(json.dumps({"ok":True},ensure_ascii=False).encode()); return
         if self.path == "/api/admin/logout":
             self.send_response(200); self.send_header("Content-Type", "application/json; charset=utf-8"); self.send_header("Set-Cookie", "salon_admin=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0"); self.end_headers(); self.wfile.write(b'{"ok":true}'); return
+        if self.path == "/api/admin/services":
+            if not admin_cookie_ok(self): return self.send_json(401, {"ok": False, "error": "Admin login required."})
+            try:
+                length = int(self.headers.get("Content-Length", "0"))
+                if length < 2 or length > 12000: raise ValueError("Invalid request size.")
+                data = json.loads(self.rfile.read(length).decode("utf-8"))
+                service_id = save_service(data)
+                return self.send_json(201, {"ok": True, "id": service_id})
+            except ValueError as exc: return self.send_json(400, {"ok": False, "error": str(exc)})
+            except Exception as exc:
+                print("Service save failed:", exc, flush=True)
+                return self.send_json(500, {"ok": False, "error": "Could not save service."})
         if self.path == "/api/admin/promotions":
             if not admin_cookie_ok(self): return self.send_json(401, {"ok":False,"error":"??????? ? ?????? ??????????."})
             try:
@@ -237,7 +391,7 @@ class Handler(BaseHTTPRequestHandler):
         preferred_time = str(data.get("time", "")).strip()[:40]
         contact = str(data.get("contact", "Телефон")).strip()[:30]
         comment = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f]", "", str(data.get("comment", "")).strip())[:1000]
-        if len(name) < 2 or len(phone) < 5 or service not in SERVICES:
+        if len(name) < 2 or len(phone) < 5 or not valid_booking_service(service):
             return self.send_json(400, {"ok": False, "error": "Проверьте имя, телефон и выбранную услугу."})
         try:
             selected_date = date.fromisoformat(booking_date)
@@ -272,6 +426,19 @@ class Handler(BaseHTTPRequestHandler):
             "message": "Заявка сохранена. " + ("Уведомление отправлено мастеру." if notified else "Для подтверждения записи мастер свяжется с вами.")})
 
     def do_PUT(self):
+        if self.path.startswith("/api/admin/services/"):
+            if not admin_cookie_ok(self): return self.send_json(401, {"ok": False, "error": "Требуется вход администратора."})
+            try:
+                service_id = int(self.path.rsplit("/", 1)[1])
+                length = int(self.headers.get("Content-Length", "0"))
+                if length < 2 or length > 12000: raise ValueError("Некорректный размер запроса.")
+                data = json.loads(self.rfile.read(length).decode("utf-8"))
+                save_service(data, service_id)
+                return self.send_json(200, {"ok": True, "id": service_id})
+            except ValueError as exc: return self.send_json(400, {"ok": False, "error": str(exc)})
+            except Exception as exc:
+                print("Service update failed:", exc, flush=True)
+                return self.send_json(500, {"ok": False, "error": "Не удалось обновить услугу."})
         if not self.path.startswith("/api/admin/promotions/") or not admin_cookie_ok(self): return self.send_json(401,{"ok":False,"error":"??? ???????."})
         try:
             pid=int(self.path.rsplit("/",1)[1]); length=int(self.headers.get("Content-Length","0"))
@@ -309,6 +476,16 @@ class Handler(BaseHTTPRequestHandler):
             return self.send_json(500, {"ok": False, "error": "Could not update booking"})
 
     def do_DELETE(self):
+        if self.path.startswith("/api/admin/services/"):
+            if not admin_cookie_ok(self): return self.send_json(401, {"ok": False, "error": "Требуется вход администратора."})
+            try:
+                service_id = int(self.path.rsplit("/", 1)[1])
+                delete_service(service_id)
+                return self.send_json(200, {"ok": True})
+            except ValueError as exc: return self.send_json(404, {"ok": False, "error": str(exc)})
+            except Exception as exc:
+                print("Service delete failed:", exc, flush=True)
+                return self.send_json(500, {"ok": False, "error": "Не удалось удалить услугу."})
         if not self.path.startswith("/api/admin/promotions/") or not admin_cookie_ok(self): return self.send_json(401,{"ok":False,"error":"??? ???????."})
         try:
             pid=int(self.path.rsplit("/",1)[1])
@@ -327,5 +504,6 @@ class Handler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     init_db()
+    init_services()
     print(f"Salon website listening on 0.0.0.0:{PORT}; database={DB_PATH}", flush=True)
     ThreadingHTTPServer(("0.0.0.0", PORT), Handler).serve_forever()
