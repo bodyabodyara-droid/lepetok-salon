@@ -173,39 +173,33 @@ h1,h2,h3,.section-head h2,.about h2,.booking-copy h2,.contact h2{font-family:'Co
 .catalog-card h3{font-family:'Bodoni Moda','Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:700;font-size:46px;line-height:1.05;letter-spacing:.01em;color:#f7edff;text-shadow:0 1px 0 #ffffff12;margin:10px 0 17px}
 @media(max-width:600px){.catalog-card h3{font-size:38px;font-weight:700;line-height:1.08}}
 
-/* Promotion artwork: compact thumbnail on every screen, including mobile. */
-.top-promotion-card img,.promotion-card img{width:25%!important;max-width:160px!important;height:48px!important;max-height:48px!important;object-fit:cover!important;display:block!important;margin:10px auto 0!important;border-radius:8px!important}
-@media(max-width:600px){.top-promotion-card img,.promotion-card img{width:25%!important;max-width:120px!important;height:48px!important;max-height:48px!important}}
-/* Promotions carousel: compact cards, real horizontal scrollbar, arrows and touch support */
-.top-promotions-inner{min-width:0}
-.top-promotion-grid{display:flex!important;flex-flow:row nowrap!important;gap:18px;max-width:100%;box-sizing:border-box;overflow-x:auto!important;overflow-y:hidden!important;padding:4px 2px 18px;scroll-snap-type:x mandatory;scroll-behavior:smooth;overscroll-behavior-x:contain;touch-action:pan-x pan-y;cursor:grab;scrollbar-width:auto;scrollbar-color:#849b5d #e3e9d9}
-.top-promotion-grid:active{cursor:grabbing}
-.top-promotion-grid::-webkit-scrollbar{display:block;height:12px}
-.top-promotion-grid::-webkit-scrollbar-track{background:#e3e9d9;border-radius:999px}
-.top-promotion-grid::-webkit-scrollbar-thumb{background:#849b5d;border-radius:999px;border:2px solid #e3e9d9}
-.top-promotion-grid .top-promotion-card{box-sizing:border-box;flex:0 0 clamp(150px,14vw,180px)!important;width:clamp(150px,14vw,180px);min-width:0;scroll-snap-align:start}
-.top-promotions [data-top-promotion-list] .top-promotion-card img{display:block!important;width:120px!important;min-width:120px!important;max-width:120px!important;height:120px!important;min-height:120px!important;max-height:120px!important;object-fit:cover!important;margin:8px auto!important;border-radius:8px!important}.top-promotions [data-top-promotion-list] .top-promotion-card{overflow:hidden}.top-promotions [data-top-promotion-list] .top-promotion-card .top-promotion-card-body{padding:12px 14px}.top-promotions [data-top-promotion-list] .top-promotion-card h3{font-size:24px;line-height:1.25;margin:0 0 8px}.top-promotions [data-top-promotion-list] .top-promotion-card p{font-size:18px;line-height:1.4;margin:0 0 10px}.top-promotions [data-top-promotion-list] .top-promotion-card .promotion-price{font-size:19px}
-.top-promotions-loading,.top-promotions-empty{flex:0 0 100%;width:100%;box-sizing:border-box}
-.promotion-carousel-controls{display:flex;justify-content:flex-end;gap:8px;margin:0 0 8px}
-.promotion-carousel-controls button{width:38px;height:34px;border:1px solid #849b5d;border-radius:18px;background:#fff;color:#40532c;font-size:20px;cursor:pointer}
-.promotion-carousel-controls button:disabled{opacity:.35;cursor:default}
-@media(max-width:600px){.promotion-grid{grid-template-columns:1fr}.top-promotion-grid{gap:12px;padding-bottom:16px}.top-promotion-grid .top-promotion-card{flex-basis:42vw!important;width:42vw;max-width:180px}.top-promotions [data-top-promotion-list] .top-promotion-card img{width:96px!important;min-width:96px!important;max-width:96px!important;height:96px!important;min-height:96px!important;max-height:96px!important;margin:6px auto!important;border-radius:8px!important}.top-promotions [data-top-promotion-list] .top-promotion-card .top-promotion-card-body{padding:10px 12px}.top-promotions [data-top-promotion-list] .top-promotion-card h3{font-size:22px;line-height:1.25}.top-promotions [data-top-promotion-list] .top-promotion-card p{font-size:17px;line-height:1.35}.top-promotions [data-top-promotion-list] .top-promotion-card .promotion-price{font-size:18px}.promotion-carousel-controls button{width:42px;height:38px}}
-/* Mobile promotions: hard constraints for every promotion image/card variant. */
+/* Promotions: consolidated rules, no competing size overrides */
 .top-promotions,.top-promotions-inner{box-sizing:border-box;width:100%;max-width:100%;min-width:0}
-.top-promotions [data-top-promotion-list] img,.top-promotions .top-promotion-card img,.top-promotions img{width:96px!important;min-width:96px!important;max-width:96px!important;height:96px!important;min-height:96px!important;max-height:96px!important;object-fit:cover!important;display:block!important;margin:8px auto!important}
+.top-promotion-grid{display:flex!important;flex-flow:row nowrap!important;gap:18px;max-width:100%;box-sizing:border-box;overflow-x:auto!important;overflow-y:hidden!important;padding:4px 2px 18px;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;touch-action:pan-x pan-y}
+.top-promotion-grid .top-promotion-card{box-sizing:border-box;flex:0 0 220px!important;width:220px!important;min-width:220px!important;max-width:220px!important;scroll-snap-align:start;overflow:hidden}
+.top-promotions [data-top-promotion-list] .top-promotion-card img{display:block!important;width:100px!important;min-width:100px!important;max-width:100px!important;height:64px!important;min-height:64px!important;max-height:64px!important;object-fit:cover!important;margin:8px auto!important;border-radius:8px!important}
+.top-promotions [data-top-promotion-list] .top-promotion-card .top-promotion-card-body{padding:10px 12px}
+.top-promotions [data-top-promotion-list] .top-promotion-card h3{font-size:20px;line-height:1.25;margin:0 0 8px}
+.top-promotions [data-top-promotion-list] .top-promotion-card p{font-size:16px;line-height:1.4;margin:0 0 10px}
+.top-promotions [data-top-promotion-list] .top-promotion-card .promotion-price{font-size:18px}
+.promotion-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:stretch}
+.promotion-card img{display:block!important;width:100px!important;min-width:0!important;max-width:calc(100% - 16px)!important;height:64px!important;min-height:64px!important;max-height:64px!important;object-fit:cover!important;margin:10px auto!important;border-radius:8px!important}
 @media(max-width:600px){
  .top-promotions{padding:12px 0 18px!important;overflow:hidden}
  .top-promotions-inner{padding-left:12px!important;padding-right:12px!important}
- .top-promotions-heading{margin-bottom:10px!important;gap:8px!important}
+ .top-promotions-heading{align-items:flex-start;flex-direction:column;gap:8px;margin-bottom:10px!important}
  .top-promotions-heading h2{font-size:24px!important;line-height:1.2}
  .top-promotions-heading p{font-size:13px!important}
  .top-promotion-grid{width:100%!important;max-width:100%!important;gap:10px!important;padding:4px 0 12px!important}
  .top-promotion-grid .top-promotion-card{flex:0 0 148px!important;width:148px!important;max-width:148px!important;min-width:148px!important}
- .top-promotions [data-top-promotion-list] img,.top-promotions .top-promotion-card img,.top-promotions img{width:72px!important;min-width:72px!important;max-width:72px!important;height:72px!important;min-height:72px!important;max-height:72px!important;margin:6px auto!important}
+ .top-promotions [data-top-promotion-list] .top-promotion-card img{width:72px!important;min-width:72px!important;max-width:72px!important;height:48px!important;min-height:48px!important;max-height:48px!important;margin:6px auto!important}
  .top-promotions [data-top-promotion-list] .top-promotion-card .top-promotion-card-body{padding:8px!important}
- .top-promotions [data-top-promotion-list] .top-promotion-card h3,.top-promotion-card h3{font-size:16px!important;line-height:1.25!important}
- .top-promotions [data-top-promotion-list] .top-promotion-card p,.top-promotion-card p{font-size:13px!important;line-height:1.35!important}
- .top-promotions [data-top-promotion-list] .top-promotion-card .promotion-price,.top-promotion-card .promotion-price{font-size:14px!important}
+ .top-promotions [data-top-promotion-list] .top-promotion-card h3{font-size:15px!important;line-height:1.25!important}
+ .top-promotions [data-top-promotion-list] .top-promotion-card p{font-size:12px!important;line-height:1.35!important}
+ .top-promotions [data-top-promotion-list] .top-promotion-card .promotion-price{font-size:13px!important}
+ .promotions-dialog{padding:18px!important;width:calc(100% - 24px)!important;max-width:100%!important;box-sizing:border-box}
+ .promotion-grid{grid-template-columns:1fr!important;gap:12px!important}
+ .promotion-card img{width:84px!important;max-width:calc(100% - 16px)!important;height:56px!important;min-height:56px!important;max-height:56px!important}
 }
 /* Final mobile hero alignment: scale the orbit to the phone viewport and lift it slightly. */
 @media(max-width:480px){.fortuna-hero .orbit-scene{width:min(70vw,360px)!important;transform:translateY(-8px)!important;margin:auto 0}.fortuna-hero .orbit-caption{bottom:-3%;font-size:8px;letter-spacing:.12em}.fortuna-hero .hero-bottom{padding-bottom:8px}}
