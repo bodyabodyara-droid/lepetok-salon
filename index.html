@@ -190,6 +190,23 @@ h1,h2,h3,.section-head h2,.about h2,.booking-copy h2,.contact h2{font-family:'Co
 .promotion-carousel-controls button{width:38px;height:34px;border:1px solid #849b5d;border-radius:18px;background:#fff;color:#40532c;font-size:20px;cursor:pointer}
 .promotion-carousel-controls button:disabled{opacity:.35;cursor:default}
 @media(max-width:600px){.promotion-grid{grid-template-columns:1fr}.top-promotion-grid{gap:12px;padding-bottom:16px}.top-promotion-grid .top-promotion-card{flex-basis:42vw!important;width:42vw;max-width:180px}.top-promotions [data-top-promotion-list] .top-promotion-card img{width:96px!important;min-width:96px!important;max-width:96px!important;height:96px!important;min-height:96px!important;max-height:96px!important;margin:6px auto!important;border-radius:8px!important}.top-promotions [data-top-promotion-list] .top-promotion-card .top-promotion-card-body{padding:10px 12px}.top-promotions [data-top-promotion-list] .top-promotion-card h3{font-size:22px;line-height:1.25}.top-promotions [data-top-promotion-list] .top-promotion-card p{font-size:17px;line-height:1.35}.top-promotions [data-top-promotion-list] .top-promotion-card .promotion-price{font-size:18px}.promotion-carousel-controls button{width:42px;height:38px}}
+/* Mobile promotions: hard constraints for every promotion image/card variant. */
+.top-promotions,.top-promotions-inner{box-sizing:border-box;width:100%;max-width:100%;min-width:0}
+.top-promotions [data-top-promotion-list] img,.top-promotions .top-promotion-card img,.top-promotions img{width:96px!important;min-width:96px!important;max-width:96px!important;height:96px!important;min-height:96px!important;max-height:96px!important;object-fit:cover!important;display:block!important;margin:8px auto!important}
+@media(max-width:600px){
+ .top-promotions{padding:12px 0 18px!important;overflow:hidden}
+ .top-promotions-inner{padding-left:12px!important;padding-right:12px!important}
+ .top-promotions-heading{margin-bottom:10px!important;gap:8px!important}
+ .top-promotions-heading h2{font-size:24px!important;line-height:1.2}
+ .top-promotions-heading p{font-size:13px!important}
+ .top-promotion-grid{width:100%!important;max-width:100%!important;gap:10px!important;padding:4px 0 12px!important}
+ .top-promotion-grid .top-promotion-card{flex:0 0 148px!important;width:148px!important;max-width:148px!important;min-width:148px!important}
+ .top-promotions [data-top-promotion-list] img,.top-promotions .top-promotion-card img,.top-promotions img{width:72px!important;min-width:72px!important;max-width:72px!important;height:72px!important;min-height:72px!important;max-height:72px!important;margin:6px auto!important}
+ .top-promotions [data-top-promotion-list] .top-promotion-card .top-promotion-card-body{padding:8px!important}
+ .top-promotions [data-top-promotion-list] .top-promotion-card h3,.top-promotion-card h3{font-size:16px!important;line-height:1.25!important}
+ .top-promotions [data-top-promotion-list] .top-promotion-card p,.top-promotion-card p{font-size:13px!important;line-height:1.35!important}
+ .top-promotions [data-top-promotion-list] .top-promotion-card .promotion-price,.top-promotion-card .promotion-price{font-size:14px!important}
+}
 /* Final mobile hero alignment: scale the orbit to the phone viewport and lift it slightly. */
 @media(max-width:480px){.fortuna-hero .orbit-scene{width:min(70vw,360px)!important;transform:translateY(-8px)!important;margin:auto 0}.fortuna-hero .orbit-caption{bottom:-3%;font-size:8px;letter-spacing:.12em}.fortuna-hero .hero-bottom{padding-bottom:8px}}
 </style>
