@@ -320,6 +320,7 @@ class Handler(BaseHTTPRequestHandler):
         request_path = urllib.parse.urlsplit(self.path).path
         if request_path in ("/", "/index.html"): request_path = "index.html"
         elif request_path == "/admin": request_path = "admin.html"
+        elif request_path in ("/promotions", "/promotions/"): request_path = "promotions.html"
         path = (ROOT / request_path.lstrip("/")).resolve()
         if ROOT not in path.parents and path != ROOT / "index.html":
             return self.send_json(403, {"ok": False, "error": "Forbidden"})
