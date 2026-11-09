@@ -1,4 +1,5 @@
 import json
+import html
 import secrets
 import hashlib
 import hmac
@@ -206,6 +207,18 @@ def notify_admin(text):
         print("Telegram notification failed:", exc, flush=True)
         return False
 
+def clean_promo_text(value):
+    """Декодирует HTML-сущности (&#1055; и т.п.), чтобы на сайте не было сырого текста."""
+    if value is None:
+        return value
+    text = str(value)
+    for _ in range(3):
+        decoded = html.unescape(text)
+        if decoded == text:
+            break
+        text = decoded
+    return text.replace("\r\n", "\n").strip()
+
 def promotion_rows(admin=False):
     if DATABASE_URL:
         import psycopg
@@ -223,7 +236,12 @@ def promotion_rows(admin=False):
                 today = date.today().isoformat()
                 rows = db.execute("SELECT id,title,description,image_url,old_price,new_price,start_date,end_date,published FROM website_promotions WHERE published=1 AND (start_date IS NULL OR start_date<=?) AND (end_date IS NULL OR end_date>=?) ORDER BY id DESC", (today,today)).fetchall()
     keys = ["id","title","description","image_url","old_price","new_price","start_date","end_date","published"]
-    return [dict(zip(keys, row)) for row in rows]
+    items = [dict(zip(keys, row)) for row in rows]
+    for item in items:
+        for field in ("title", "description", "old_price", "new_price"):
+            if field in item:
+                item[field] = clean_promo_text(item[field])
+    return items
 
 def admin_cookie_ok(handler):
     if not PROMOTIONS_ADMIN_PASSWORD:
@@ -237,11 +255,11 @@ def admin_cookie_ok(handler):
     return hmac.compare_digest(morsel.value, expected)
 
 def save_promotion(data, promotion_id=None):
-    title = str(data.get("title", "")).strip()[:120]
-    description = str(data.get("description", "")).strip()[:1500]
+    title = clean_promo_text(data.get("title") or "")[:120]
+    description = clean_promo_text(data.get("description") or "")[:1500]
     image_url = str(data.get("image_url", "")).strip()[:2800000]
-    old_price = str(data.get("old_price", "")).strip()[:40]
-    new_price = str(data.get("new_price", "")).strip()[:40]
+    old_price = clean_promo_text(data.get("old_price") or "")[:40]
+    new_price = clean_promo_text(data.get("new_price") or "")[:40]
     start_date = str(data.get("start_date", "")).strip() or None
     end_date = str(data.get("end_date", "")).strip() or None
     published = bool(data.get("published", False))
