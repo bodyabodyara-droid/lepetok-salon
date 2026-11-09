@@ -208,7 +208,7 @@ def notify_admin(text):
         return False
 
 def clean_promo_text(value):
-    """Декодирует HTML-сущности (&#1055; и т.п.), чтобы на сайте не было сырого текста."""
+    """Decode HTML entities and remove Markdown links/headings from promotion copy."""
     if value is None:
         return value
     text = str(value)
@@ -217,6 +217,14 @@ def clean_promo_text(value):
         if decoded == text:
             break
         text = decoded
+    text = re.sub(r"!\[([^\]]*)\]\([^)]*\)", r"\1", text)
+    text = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", text)
+    text = re.sub(r"^\s{0,3}#{1,6}\s*", "", text, flags=re.MULTILINE)
+    text = re.sub(r"<https?://[^>]+>", "", text)
+    text = re.sub(r"https?://\S+", "", text)
+    text = re.sub(r"[*_`~]", "", text)
+    text = re.sub(r"[ \t]+", " ", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
     return text.replace("\r\n", "\n").strip()
 
 def promotion_rows(admin=False):
