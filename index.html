@@ -203,6 +203,23 @@ h1,h2,h3,.section-head h2,.about h2,.booking-copy h2,.contact h2{font-family:'Co
 }
 /* Final mobile hero alignment: scale the orbit to the phone viewport and lift it slightly. */
 @media(max-width:480px){.fortuna-hero .orbit-scene{width:min(70vw,360px)!important;transform:translateY(-8px)!important;margin:auto 0}.fortuna-hero .orbit-caption{bottom:-3%;font-size:8px;letter-spacing:.12em}.fortuna-hero .hero-bottom{padding-bottom:8px}}
+
+/* Featured promotion: preserve the existing dark plum and violet site palette. */
+.top-promotions{background:linear-gradient(180deg,rgba(157,53,223,.08),transparent)!important}
+.top-promotions-heading{margin-bottom:18px!important}
+.top-promotion-grid{display:block!important;overflow:visible!important;padding:0!important}
+.top-promotions .top-promotion-card{display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr);align-items:stretch;max-width:760px;min-height:190px;margin:0 auto;cursor:default;border:1px solid var(--line)!important;border-radius:22px!important;background:linear-gradient(125deg,rgba(157,53,223,.13),var(--paper) 55%,rgba(192,107,255,.08))!important;box-shadow:0 16px 42px rgba(0,0,0,.24)}
+.top-promotion-image{padding:18px;display:flex;align-items:center;justify-content:center;min-width:0}
+.top-promotions .top-promotion-image img{display:block;width:100%!important;max-width:184px!important;height:142px!important;min-height:0!important;max-height:142px!important;object-fit:cover;margin:0!important;border-radius:14px!important}
+.top-promotions .top-promotion-card-body{display:flex;align-items:center;justify-content:space-between;gap:22px;padding:24px 26px!important;min-width:0}
+.top-promotions .top-promotion-card h3{font-size:clamp(22px,3vw,30px);line-height:1.15;margin:0 0 10px;color:var(--ink)}
+.top-promotions .top-promotion-card p{font-size:15px;line-height:1.55;color:var(--muted);margin:0 0 12px}
+.top-promotions .promotion-price{margin-top:10px;color:var(--rose-dark);font-size:18px}
+.top-promotions .promotion-old{opacity:.65;text-decoration:line-through;margin-right:9px;color:var(--muted);font-size:14px}
+.top-promotion-mark{flex:0 0 auto;min-width:112px;max-width:145px;padding:18px 14px;border:1px solid rgba(192,107,255,.35);border-radius:16px;background:rgba(157,53,223,.13);color:var(--rose-dark);font-family:var(--serif);font-size:22px;font-weight:700;text-align:center;overflow-wrap:anywhere}
+.top-promotions-all{display:flex;justify-content:center;margin-top:18px}
+.top-promotions-all .btn{min-width:170px}
+@media(max-width:600px){.top-promotions .top-promotion-card{grid-template-columns:1fr;max-width:100%;min-height:0}.top-promotion-image{padding:12px 12px 0}.top-promotions .top-promotion-image img{width:100%!important;max-width:100%!important;height:112px!important;max-height:112px!important}.top-promotions .top-promotion-card-body{padding:14px 16px 17px!important;gap:12px}.top-promotions .top-promotion-card h3{font-size:21px}.top-promotions .top-promotion-card p{font-size:14px}.top-promotion-mark{min-width:82px;max-width:105px;padding:12px 8px;font-size:17px}.top-promotions-all{margin-top:14px}}
 </style>
 </head>
 <body>
@@ -211,8 +228,9 @@ h1,h2,h3,.section-head h2,.about h2,.booking-copy h2,.contact h2{font-family:'Co
 <main>
 <section class="top-promotions" id="top-promotions" aria-labelledby="top-promotions-title">
  <div class="wrap top-promotions-inner">
-  <div class="top-promotions-heading"><div><div class="eyebrow">СПЕЦИАЛЬНЫЕ ПРЕДЛОЖЕНИЯ</div><h2 id="top-promotions-title">Акции салона</h2><p>Выберите предложение и откройте подробности.</p></div><a class="btn" href="/promotions">&#1042;&#1089;&#1077; &#1072;&#1082;&#1094;&#1080;&#1080;</a></div>
+  <div class="top-promotions-heading"><div><div class="eyebrow">СПЕЦИАЛЬНЫЕ ПРЕДЛОЖЕНИЯ</div><h2 id="top-promotions-title">Акции салона</h2><p>Выберите предложение и откройте подробности.</p></div></div>
   <div class="top-promotion-grid" data-top-promotion-list><p class="top-promotions-loading">Загружаем актуальные предложения…</p></div>
+  <div class="top-promotions-all"><a class="btn" href="/promotions">&#1042;&#1089;&#1077; &#1072;&#1082;&#1094;&#1080;&#1080;</a></div>
  </div>
 </section>
 <section class="fortuna-hero" id="home">
@@ -311,7 +329,7 @@ document.addEventListener('keydown',event=>{if(event.key==='Escape'&&specialists
 
 const topPromotionList=document.querySelector('[data-top-promotion-list]');
 function escapePromotionText(value){return String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
-async function loadPromotions(){if(!topPromotionList)return;try{const response=await fetch('/api/promotions',{cache:'no-store'});if(!response.ok)throw new Error('Promotions request failed');const data=await response.json();const items=data.promotions||[];if(!items.length){topPromotionList.innerHTML='<p class="top-promotions-empty">&#1057;&#1077;&#1081;&#1095;&#1072;&#1089; &#1085;&#1077;&#1090; &#1086;&#1087;&#1091;&#1073;&#1083;&#1080;&#1082;&#1086;&#1074;&#1072;&#1085;&#1085;&#1099;&#1093; &#1072;&#1082;&#1094;&#1080;&#1081;. &#1047;&#1072;&#1075;&#1083;&#1103;&#1085;&#1080;&#1090;&#1077; &#1087;&#1086;&#1079;&#1078;&#1077;!</p>';return;}topPromotionList.innerHTML=items.map(item=>`<a class="top-promotion-card" href="/promotions"><div class="top-promotion-card-body"><h3>${escapePromotionText(item.title||'Акция')}</h3><p>${escapePromotionText(item.description||'Подробности и условия акции')}</p>${item.new_price?`<div class="promotion-price">${escapePromotionText(item.new_price)}</div>`:''}</div></a>`).join('');}catch(e){topPromotionList.innerHTML='<p class="top-promotions-empty">&#1053;&#1077; &#1091;&#1076;&#1072;&#1083;&#1086;&#1089;&#1100; &#1079;&#1072;&#1075;&#1088;&#1091;&#1079;&#1080;&#1090;&#1100; &#1072;&#1082;&#1094;&#1080;&#1080;.</p>';console.error(e);}}
+async function loadPromotions(){if(!topPromotionList)return;try{const response=await fetch('/api/promotions',{cache:'no-store'});if(!response.ok)throw new Error('Promotions request failed');const data=await response.json();const items=data.promotions||[];if(!items.length){topPromotionList.innerHTML='<p class="top-promotions-empty">&#1057;&#1077;&#1081;&#1095;&#1072;&#1089; &#1085;&#1077;&#1090; &#1086;&#1087;&#1091;&#1073;&#1083;&#1080;&#1082;&#1086;&#1074;&#1072;&#1085;&#1085;&#1099;&#1093; &#1072;&#1082;&#1094;&#1080;&#1081;. &#1047;&#1072;&#1075;&#1083;&#1103;&#1085;&#1080;&#1090;&#1077; &#1087;&#1086;&#1079;&#1078;&#1077;!</p>';return;}topPromotionList.innerHTML=items.slice(0,1).map(item=>`<article class="top-promotion-card">${item.image_url?`<div class="top-promotion-image"><img src="${escapePromotionText(item.image_url)}" alt="${escapePromotionText(item.title||'\u0410\u043a\u0446\u0438\u044f')}" loading="lazy" onerror="this.closest('.top-promotion-image').remove()"></div>`:''}<div class="top-promotion-card-body"><div class="top-promotion-copy"><h3>${escapePromotionText(item.title||'\u0410\u043a\u0446\u0438\u044f')}</h3><p>${escapePromotionText(item.description||'\u041f\u043e\u0434\u0440\u043e\u0431\u043d\u043e\u0441\u0442\u0438 \u0438 \u0443\u0441\u043b\u043e\u0432\u0438\u044f \u0430\u043a\u0446\u0438\u0438 \u0443\u0442\u043e\u0447\u043d\u044f\u0439\u0442\u0435 \u0443 \u0430\u0434\u043c\u0438\u043d\u0438\u0441\u0442\u0440\u0430\u0442\u043e\u0440\u0430 \u0441\u0430\u043b\u043e\u043d\u0430.')}</p>${item.old_price||item.new_price?`<div class="promotion-price">${item.old_price?`<span class="promotion-old">${escapePromotionText(item.old_price)}</span>`:''}${item.new_price?`<strong>${escapePromotionText(item.new_price)}</strong>`:''}</div>`:''}</div><div class="top-promotion-mark">${item.new_price?escapePromotionText(item.new_price):'\u0421\u043f\u0435\u0446\u043f\u0440\u0435\u0434\u043b\u043e\u0436\u0435\u043d\u0438\u0435'}</div></div></article>`).join('');}catch(e){topPromotionList.innerHTML='<p class="top-promotions-empty">&#1053;&#1077; &#1091;&#1076;&#1072;&#1083;&#1086;&#1089;&#1100; &#1079;&#1072;&#1075;&#1088;&#1091;&#1079;&#1080;&#1090;&#1100; &#1072;&#1082;&#1094;&#1080;&#1080;.</p>';console.error(e);}}
 loadPromotions();
 // Add visible previous/next controls and keep them in sync with the horizontal carousel.
 if(topPromotionList){
